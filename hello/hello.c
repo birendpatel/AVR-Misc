@@ -50,14 +50,14 @@ int main(void) {
         PORTD = 0;
 
         //event drive mcu programming
-        while (1) {
+        while (true) {
                 //xor toggle on port D causes pin D4 to be driven low if it
                 //is currently driven high, and vise versa.
                 PORTD ^= (1 << PIND4);
 
                 //wait .1 seconds (provided F_CPU is correct) before toggling
                 //the LED. This function actually takes a double!
-                _delay_ms(100);
+                _delay_ms(1000);
         }
 
         return 0;
