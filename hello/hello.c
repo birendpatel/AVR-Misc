@@ -35,12 +35,6 @@ If you have installed avr-libc, then the standard C library is available.
 */
 #include <stdbool.h>
 
-//sometimes you might see source which uses void main(void) instead.
-//this stems from freestanding versus hosted c compiler implementations.
-//avr-gcc will warn you when attempting to return void.
-//in reality, mcu programming is typically event driven within an infinite loop,
-//so the return is moot.
-
 /*
 Due to differences in freestanding versus hosted compilers, sometimes you might
 see avr source code which uses 'void main(void)'. This triggers a warning.
@@ -49,18 +43,6 @@ infinite loop. Therefore, the return value is moot. However, we'll adhere by
 NASA Power of Ten rules, so we'll use 'int main(void)'.
 */
 int main(void) {
-
-        //pins on the mcu are grouping into ports.
-        //data direction registers (DDRx) identify whether a pin in port x is
-        //configured for input or output.
-
-        //DDRD is data direction register for port D.
-        //a set bit indicates that the respective pin is configured for output.
-        //on an arduino you'll have to compare pin configurations in the avr
-        //data sheet to the arudino schematics. For example, arduino digital pin
-        //8 on the Uno is configured in data direction register for port B via
-        //pin B0.
-
         /*
         Take a look at the pin config map on your mcu data sheet. Pins on the
         mcu are grouped into ports. Data direction registers (DDRx) are simply
