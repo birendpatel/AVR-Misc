@@ -4,25 +4,35 @@
  * Blink an LED at a regular interval
  */
 
-//inform the compiler of the CPU frequency.
-//required for correct delay() behavior (see line 19)
-//i'm on an arduino uno, which currently uses a 16 MHz external clock.
-//on a stock avr chip, you'll have to read and decipher the fuse bits.
-//note that on stock arduinos you cannot read or write fuse bits.
+/*
+First ,we inform the compiler of the CPU frequency. This is required for correct
+behavior of the _delay_ms() function called in main(). Typically, one must read
+and decipher the fuse bits on the mcu to determine the frequency. I am on an
+arduino uno for this example, and these boards use an external clock operating
+at 16 MHz. Note: This macro only assists the compiler. It does not alter the
+frequency of your mcu.
+*/
 #define F_CPU (16000000UL)
 
-//when we compile our source, avr-gcc will need a -mmcu flag which provides
-//the device. The IO header includes IO definitions for all devices, and the
-//-mmcu flag redirects to the correct IO header. Don't include the specific
-//device header, because io.h also provides other functionality!
+/*
+When we later compile our source code, avr-gcc will need an -mmcu flag which
+we pass to the compiler. This flag identifies the mcu device, and allows the
+compiler to include IO header files specific to that device.
+*/
 #include <avr/io.h>
 
-//this is a high level library for busy-wait functionality. It lets us request
-//delays in time rather than in # of cycles. This is why F_CPU needs to be
-//carefully set. To use this library, we MUST pass an -Ox optimization flag.
+/*
+This header exposes high level inline functions for busy-wait functionality. It
+lets us request delays in units of time rather than in number of cycles. This
+header only works correctly when we define F_CPU. Otherwise, the compiler will
+default to a frequency that is almost surely incorrect. In addition, to use
+this header we must pass an -Ox optimization flag to the compiler.
+*/
 #include <util/delay.h>
 
-//if you've installed avr-libc, the standard C library is available!
+/*
+If you have installed avr-libc, then the standard C library is available.
+*/
 #include <stdbool.h>
 
 //sometimes you might see source which uses void main(void) instead.
@@ -30,34 +40,69 @@
 //avr-gcc will warn you when attempting to return void.
 //in reality, mcu programming is typically event driven within an infinite loop,
 //so the return is moot.
+
+/*
+Due to differences in freestanding versus hosted compilers, sometimes you might
+see avr source code which uses 'void main(void)'. This triggers a warning.
+Embedded programming is often event driven, so typically main() will employ an
+infinite loop. Therefore, the return value is moot. However, we'll adhere by
+NASA Power of Ten rules, so we'll use 'int main(void)'.
+*/
 int main(void) {
 
-        //ports are represented by registers inside a mcu.
+        //pins on the mcu are grouping into ports.
+        //data direction registers (DDRx) identify whether a pin in port x is
+        //configured for input or output.
+
         //DDRD is data direction register for port D.
         //a set bit indicates that the respective pin is configured for output.
         //on an arduino you'll have to compare pin configurations in the avr
         //data sheet to the arudino schematics. For example, arduino digital pin
         //8 on the Uno is configured in data direction register for port B via
         //pin B0.
-        DDRD = (1 << PIND4);
 
-        //when a bit is set in PORTD and the respective pin is configured for
-        //output in the DD register, then the port pin is driven high. Here,
-        //we configure all pins in port D to drive low. We really only care
-        //about pinD4.
-        //in other words, the value of DDR determines what the pin does, but the
-        //value of PORTD determines what the *output* pin is currently doing.
+        /*
+        Take a look at the pin config map on your mcu data sheet. Pins on the
+        mcu are grouped into ports. Data direction registers (DDRx) are simply
+        registers which identify whether a pin in port x is configured for
+        input or output. I've hooked up an LED to PD4, so I want to configure
+        the fourth bit on the data direction register for port D to output. On
+        an arduino, you'll have to compare the pin configurations on the mcu to
+        the arduino schematics and find out which digital pin that PD4 maps to.
+        */
+        DDRD = (1 << DDD4);
+
+        /*
+        Data direction registers only determine what a pin *can* do, but not
+        what that pin *is* doing. When a pin has been configured for output,
+        then the associated port output register (PORTx) controls whether that
+        pin is being driven high (on) or low (off). Here, we configure all pins
+        to drive low, although we really only care about PIND4, which is
+        identified by the PORTD4 macro.
+        */
         PORTD = 0;
 
-        //event drive mcu programming
+        /*
+        Event driven programming. In more sophisticated code, our mcu will be
+        listening and responding to changes in its environment.
+        */
         while (true) {
-                //xor toggle on port D causes pin D4 to be driven low if it
-                //is currently driven high, and vise versa.
-                PORTD ^= (1 << PIND4);
+                /*
+                Again, DDR registers specify what a pin can do, but PORT
+                registers specifiy what they are doing. Here, we simply toggle
+                the register contents at bit 4 (PORTD4) to switch between
+                driving high and driving low.
+                */
+                PORTD ^= (1 << PORTD4);
 
-                //wait .1 seconds (provided F_CPU is correct) before toggling
-                //the LED. This function actually takes a double!
-                _delay_ms(1000);
+                /*
+                We request a wait for 100 milliseconds (0.1 seconds). This will
+                only work correctly if F_CPU was defined accurately. Without
+                this call, the loop will iterate so rapidly at 16 MHz that we
+                won't be able to detect any changes in the LED status. Note that
+                the _delay_ms argument is actually casted to a double.
+                */
+                _delay_ms(100);
         }
 
         return 0;
