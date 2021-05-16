@@ -11,15 +11,16 @@ DEVICE = ATmega328P
 PORT = /dev/ttyACM0
 TYPE = arduino
 
-.PHONY: flash
-
-flash: button.hex
-	avrdude -v -p $(DEVICE) -c $(TYPE) -P $(PORT) -U $(MEMOP)
-	rm -f ./button.bin ./button.hex
-
+.PHONY: flash clean
 
 button.hex: button.bin
 	avr-objcopy -v -O ihex $< $@
 
 button.bin: button.c
 	$(CC) $(CFLAGS) -o $@ $<
+
+flash: button.hex
+	avrdude -v -p $(DEVICE) -c $(TYPE) -P $(PORT) -U $(MEMOP)
+
+clean:
+	rm -f ./button.bin ./button.hex
