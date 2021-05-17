@@ -1,17 +1,15 @@
 /*
  * Copyright (C) 2021 Biren Patel
  * MIT License
- * Deprogram an arudino uno to a null state identified by cheeky morse code
- * on the builtin LED. This program demonstrates the wonders of macro hell.
+ * Encode the message "READY" in morse code and transmit it over an LED. For the
+ * Arduino Uno REV3, we use the builtin LED provided on PB5.
  */
-
-#define F_CPU (16000000UL)
 
 #include <stdbool.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define UNIT    300
+#define UNIT    300 /* milliseconds */
 #define LED_HI  (PORTB = 1 << PORTB5)
 #define LED_LO  (PORTB = 0)
 
@@ -23,12 +21,10 @@
 #define DOT     do {LED_HI; _delay_ms(UNIT * 1); PAUSE;} while(0)
 
 int main(void) {
-        /* builtin LED is on digital pin 13 */
         DDRB = 1 << DDB5;
         LED_LO;
 
         while (true) {
-                /* send 'READY' */
                 DOT; DASH; DOT; LETTER;
                 DOT; LETTER;
                 DOT; DASH; LETTER;
