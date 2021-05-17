@@ -5,6 +5,7 @@
 
 CC = avr-gcc
 CFLAGS = -O1 -mmcu=atmega328p -Wall -Werror -Wextra -Wpedantic
+CFLAGS += -DF_CPU=16000000UL
 
 MEMOP = flash:w:button.hex:i
 DEVICE = ATmega328P
