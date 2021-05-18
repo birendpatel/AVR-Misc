@@ -16,14 +16,14 @@
 
 /*******************************************************************************
 * setup() - configure registers
-* @PD1: output, drive low
 * @PD2: output, drive low
 * @PD3: output, drive low
+* @PD4: output, drive low
 * @PB0: input, pull up
 * @PB5: output, drive low
 *******************************************************************************/
 void setup(void) {
-        DDRD = (1 << DDD1) | (1 << DDD2) | (1 << DDD3);
+        DDRD = (1 << DDD2) | (1 << DDD3) | (1 << DDD4);
         DDRB = (1 << DDB5);
         PORTB = 1 << PORTB0;
         return;
@@ -58,15 +58,15 @@ int main(void) {
                                         break;
 
                                 case GREEN:
-                                        PORTD = 1 << PORTD1;
-                                        break;
-
-                                case YELLOW:
                                         PORTD = 1 << PORTD2;
                                         break;
 
-                                case RED:
+                                case YELLOW:
                                         PORTD = 1 << PORTD3;
+                                        break;
+
+                                case RED:
+                                        PORTD = 1 << PORTD4;
                                         break;
 
                                 default: /* error state */
