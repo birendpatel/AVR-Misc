@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <avr/io.h>
+#include <util/delay.h>
 
 #define NONE    ((uint8_t) 0x0)
 #define GREEN   ((uint8_t) 0x1)
@@ -34,6 +35,21 @@ void setup(void) {
 *******************************************************************************/
 void advance(uint8_t *prev) {
         *prev = (*prev + 1) & WRAP;
+}
+
+/*******************************************************************************
+* trap() - demonstration of the debug led.
+* If the fastmod in advance() was poorly implemented then the switch in main
+* would fall back here into a do-nothing loop. Try changing WRAP to 0x7 and
+* reflash to see it in action.
+*******************************************************************************/
+void trap(void) {
+        PORTD = 0;
+
+        while (1) {
+                PORTB ^= 1 << PORTB5;
+                _delay_ms(200);
+        }
 }
 
 /*******************************************************************************
@@ -69,9 +85,8 @@ int main(void) {
                                         PORTD = 1 << PORTD4;
                                         break;
 
-                                default: /* error state */
-                                        PORTD = 0;
-                                        PORTB ^= (1 << PORTB5);
+                                default:
+                                        trap();
                                 }
 
                                 flag = 1;
