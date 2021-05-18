@@ -20,7 +20,8 @@ and all LEDs will be off. If the MCU is in the NONE state and the button is
 pressed, then the green LED will turn on. The cycle continues forever in this
 fixed cyclical pattern.
 
-Technical note (2): button debouncing is implemented in hardware, see schematic
+Technical note (2): button debouncing is not implemented in either hardware or
+software
 
 /*******************************************************************************
 * Usage Scenario
