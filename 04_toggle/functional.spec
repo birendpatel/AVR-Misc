@@ -23,6 +23,8 @@ fixed cyclical pattern.
 Technical note (2): button debouncing is not implemented in either hardware or
 software
 
+Technical note (3): include a debugging LED
+
 /*******************************************************************************
 * Usage Scenario
 *******************************************************************************/
