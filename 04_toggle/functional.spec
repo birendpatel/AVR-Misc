@@ -23,17 +23,20 @@ fixed cyclical pattern.
 Technical note (2): button debouncing is not implemented in either hardware or
 software
 
-Technical note (3): include a debugging LED
+Technical note (3): include a debugging LED to track state conditions
 
 /*******************************************************************************
 * Usage Scenario
 *******************************************************************************/
 
 Goran is teaching driving lessons to recently discovered aliens who wish to
-peacefully inhabit our planet. He uses our MCU to demonstrate the fundamental
-concepts of traffic lights. The aliens understand thanks to the power of visual
-hands-on learning. Unfortunately, our MCU includes a NONE state which is not
-possible on real traffic lights. When the aliens attempt to drive in the real
-world, the light moves immediately from red to green and chaos ensues. The
-aliens turn violent and hostile and the world burns thanks to Goran's poor
-foresight.
+peacefully inhabit our planet.
+
+He uses our MCU to demonstrate the fundamental concepts of traffic lights. The
+aliens understand thanks to the power of visual hands-on learning.
+
+Unfortunately, our MCU includes a NONE state which is not possible on real
+traffic lights. When the aliens attempt to drive in the real world, the light
+moves immediately from red to green and chaos ensues. The situation is made
+drastically worse by a lack of debouncing algorithms. The aliens turn violent
+and hostile and the world burns thanks to Goran's poor foresight.
