@@ -111,6 +111,13 @@ void led_send(const uint8_t data) {
 /*******************************************************************************
 * main() - listen on Rx and echo data to LEDs and Tx
 *******************************************************************************/
+#define uart_send_chunk(data)                                                  \
+        do {                                                                   \
+                uart_send('<');                                                \
+                uart_send(data);                                               \
+                uart_send('>');                                                \
+        } while (0)
+
 int main(void) {
         led_init();
         uart_init();
@@ -125,8 +132,9 @@ int main(void) {
                         trap(err);
                 }
 
+                uart_send_chunk(data);
                 led_send(data);
-                uart_send(data);
+                _delay_ms(250);
         }
 
         return 0;
