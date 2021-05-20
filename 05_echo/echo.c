@@ -22,7 +22,7 @@
 * trap() - no return do nothing loop and flash debug LED
 * note: error codes are natural numbers, so for loop indicates error code
 *******************************************************************************/
-void trap(uint8_t iter) {
+void trap(const uint8_t iter) {
         while (1) {
                 for (int i = 0; i < iter; i++) {
                         PORTB ^= 1 << PORTB5;
@@ -31,19 +31,6 @@ void trap(uint8_t iter) {
 
                 _delay_ms(1000);
         }
-}
-
-/*******************************************************************************
-* led_init() - configure LED pins
-* @PD4-7: output, drive low
-* @PB0-3: output, drive low
-* @PB5: output, drive low (debug LED)
-*******************************************************************************/
-void led_init(void) {
-        DDRD = 0b11110000;
-        DDRB = 0b00101111;
-        PORTD = 0;
-        PORTB = 0;
 }
 
 /*******************************************************************************
@@ -87,20 +74,38 @@ uint8_t uart_recv(uint8_t *byte) {
 
         while (((UCSR0A >> RXC0) & 0x1) == 0) /* wait */ ;
 
-        //check parity, frame, and data overrun conditions
-        const uint8_t par_err = (uint8_t) ((UCSR0A >> UPE0) & 0x1);
-
-        if (((UCSR0A >> UPE0) & 0x1)) /* parity */ {
+        if (((UCSR0A >> UPE0) & 0x1)) {
                 err = PARITY_ERROR;
-        } elif ((UCSR0A >> FE0) & 0x1) /* frame */ {
+        } elif ((UCSR0A >> FE0) & 0x1) {
                 err = FRAME_ERROR;
-        } elif ((UCSR0A >> DOR0) & 0x1) /* overrun */ {
+        } elif ((UCSR0A >> DOR0) & 0x1) {
                 err = OVERRUN_ERROR;
         }
 
         *byte = RDR0;
 
         return err;
+}
+
+/*******************************************************************************
+* led_init() - configure LED pins
+* @PD4-7: output, drive low
+* @PB0-3: output, drive low
+* @PB5: output, drive low (debug LED)
+*******************************************************************************/
+void led_init(void) {
+        DDRD = 0b11110000;
+        DDRB = 0b00101111;
+        PORTD = 0;
+        PORTB = 0;
+}
+
+/*******************************************************************************
+* led_send() - display binary repr of input on LEDs
+*******************************************************************************/
+void led_send(const uint8_t data) {
+        PORTB |= data >> 4;
+        PORTD |= data << 4;
 }
 
 /*******************************************************************************
@@ -114,16 +119,14 @@ int main(void) {
         uint8_t err = 0;
 
         while (1) {
-                //listen
                 err = uart_recv(&data);
 
                 if (err) {
                         trap(err);
                 }
 
-                //echo LEDs
-
-                //echo Tx
+                led_send(data);
+                uart_send(data);
         }
 
         return 0;
