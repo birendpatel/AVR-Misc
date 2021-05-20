@@ -5,7 +5,7 @@
 
 CC = avr-gcc
 CFLAGS = -O3 -mmcu=atmega328p -Wall -Werror -Wextra -Wpedantic
-CFLAGS += -DF_CPU=16000000UL -DBAUD_RATE=115200
+CFLAGS += -DF_CPU=16000000UL -DBAUD=115200UL
 
 MEMOP = flash:w:echo.hex:i
 DEVICE = ATmega328P
