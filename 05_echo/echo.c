@@ -77,12 +77,12 @@ void uart_send(const uint8_t data) {
 * uart_recv() - receive data
 * Returns: 1 if error, else 0
 *******************************************************************************/
-#define RECV_OK         0
-#define PARITY_ERROR    1
-#define FRAME_ERROR     2
-#define OVERRUN_ERROR   3
+#define RECV_OK         (uint8_t) 0
+#define PARITY_ERROR    (uint8_t) 1
+#define FRAME_ERROR     (uint8_t) 2
+#define OVERRUN_ERROR   (uint8_t) 3
 
-int uart_recv(uint8_t *byte) {
+uint8_t uart_recv(uint8_t *byte) {
         uint8_t err = RECV_OK;
 
         while (((UCSR0A >> RXC0) & 0x1) == 0) /* wait */ ;
@@ -109,6 +109,22 @@ int uart_recv(uint8_t *byte) {
 int main(void) {
         led_init();
         uart_init();
+
+        uint8_t data = 0;
+        uint8_t err = 0;
+
+        while (1) {
+                //listen
+                err = uart_recv(&data);
+
+                if (err) {
+                        trap(err);
+                }
+
+                //echo LEDs
+
+                //echo Tx
+        }
 
         return 0;
 }
