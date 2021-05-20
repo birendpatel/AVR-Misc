@@ -20,12 +20,16 @@
 
 /*******************************************************************************
 * trap() - no return do nothing loop and flash debug LED
-* note: trap called when send_recv() encounter frame or parity error
+* note: error codes are natural numbers, so for loop indicates error code
 *******************************************************************************/
-void trap(void) {
+void trap(uint8_t iter) {
         while (1) {
-                PORTB ^= 1 << PORTB5;
-                _delay_ms(100);
+                for (int i = 0; i < iter; i++) {
+                        PORTB ^= 1 << PORTB5;
+                        _delay_ms(100)
+                }
+
+                _delay_ms(1000);
         }
 }
 
@@ -71,9 +75,32 @@ void uart_send(const uint8_t data) {
 
 /*******************************************************************************
 * uart_recv() - receive data
+* Returns: 1 if error, else 0
 *******************************************************************************/
-void uart_recv(uint8_t *byte) {
-        return;
+#define RECV_OK         0
+#define PARITY_ERROR    1
+#define FRAME_ERROR     2
+#define OVERRUN_ERROR   3
+
+int uart_recv(uint8_t *byte) {
+        uint8_t err = RECV_OK;
+
+        while (((UCSR0A >> RXC0) & 0x1) == 0) /* wait */ ;
+
+        //check parity, frame, and data overrun conditions
+        const uint8_t par_err = (uint8_t) ((UCSR0A >> UPE0) & 0x1);
+
+        if (((UCSR0A >> UPE0) & 0x1)) /* parity */ {
+                err = PARITY_ERROR;
+        } elif ((UCSR0A >> FE0) & 0x1) /* frame */ {
+                err = FRAME_ERROR;
+        } elif ((UCSR0A >> DOR0) & 0x1) /* overrun */ {
+                err = OVERRUN_ERROR;
+        }
+
+        *byte = RDR0;
+
+        return err;
 }
 
 /*******************************************************************************
