@@ -30,4 +30,3 @@ teletype:
 
 clean:
 	rm -f ./echo.bin ./echo.hex
-	stty -F $(PORT) sane

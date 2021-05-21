@@ -18,6 +18,14 @@
 #include <util/delay.h>
 #include <util/setbaud.h>
 
+void led_init(void);
+void led_send(const unsigned char data);
+void uart_init(void);
+void uart_send(const unsigned char data);
+void uart_send_msg(const char *msg);
+uint8_t uart_recv(unsigned char *data);
+void trap(const uint8_t err);
+
 /*******************************************************************************
 * led_init() - configure LED pins
 * @PD4-7: output, drive low
