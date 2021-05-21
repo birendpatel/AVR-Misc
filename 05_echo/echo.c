@@ -1,8 +1,8 @@
 /*
 * Copyright (C) 2021 Biren Patel
 * MIT License
-* Note: AVR also provides setbaud.h to abstract away UART intialization details
-* Note: LEDs are split across two ports for arudino board compatibility
+* Hardware: ATmega328P (Arduino Uno Rev3)
+* Note: LEDs are split across ports B and D for arduino compatibility
 */
 
 #ifndef F_CPU
@@ -10,79 +10,75 @@
 #endif
 
 #ifndef BAUD
-        #error "BAUD_RATE not defined"
+        #error "BAUD not defined"
 #endif
 
 #include <avr/io.h>
 #include <stdint.h>
 #include <util/delay.h>
-#include <util/parity.h>
+#include <util/setbaud.h>
 
 /*******************************************************************************
-* trap() - no return do nothing loop and flash debug LED
-* note: error codes are natural numbers, so for loop indicates error code
-*******************************************************************************/
-void trap(const uint8_t iter) {
-        while (1) {
-                for (int i = 0; i < iter; i++) {
-                        PORTB ^= 1 << PORTB5;
-                        _delay_ms(100)
-                }
-
-                _delay_ms(1000);
-        }
-}
-
-/*******************************************************************************
-* uart_init() - configure async UART
-* note: ATmega328P UBRRnH bits 12-15 must be zero for future comptability
-* @UCSR0B: TX and RX enabled, 9 bit char size
-* @UCSROC: even parity, 9 bit char size
+* uart_init() - configure asynchronous UART
+* @UCSR0B: enable TX and RX
+* @UCSROC: set 7 bits per frame and set even parity mode
 *******************************************************************************/
 void uart_init(void) {
-        const uint16_t ubrr = (uint16_t) ((F_CPU / (16UL * BAUD)) - 1UL);
-
-        UBRR0H = (uint8_t) ((ubrr >> 8) & 0xF);
-        UBRR0L = (uint8_t) (ubrr & 0xFF);
-
-        UCSR0B = (1 << RXEN0) | (1 << TXEN0) | (1 << UCSZ02);
-        UCSR0C = (1 << UPM01) | (1 << UCSZ01) | (1 << UCSZ00);
+        UBRR0H = UBRRH_VALUE;
+        UBRR0L = UBRRL_VALUE;
+        UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+        UCSR0C = (1 << UCSZ01) | (1 << UPM01);
 }
 
 /*******************************************************************************
-* uart_send() - send data
+* uart_send() - transmit one frame
 *******************************************************************************/
-void uart_send(const uint8_t data) {
-        while (((UCSR0A >> UDRE0) & 0x1) == 0) /* wait */ ;
-
-        UCSR0B |= (parity_even_bit(data) << TXB80);
-
+void uart_send(const unsigned char data) {
+        while (((UCSR0A >> UDRE0) & 0x1) == 0);
         UDR0 = data;
 }
 
 /*******************************************************************************
-* uart_recv() - receive data
-* Returns: 1 if error, else 0
+* uart_send_msg() - transmit a null terminated string
+* @msg: no more than 255 characters are sent and null char is never sent
+*******************************************************************************/
+void uart_send_msg(const char *msg) {
+        uint8_t i = 0;
+
+        while (msg[i]) {
+                uart_send((unsigned char) msg[i]);
+                ++i;
+
+                if (i == UINT8_MAX) {
+                        break;
+                }
+        }
+}
+
+/*******************************************************************************
+* uart_recv() - receive one frame
+* @data: contains the recieved frame regardless of error status
+* Returns: nonzero error code on failure or RECV_OK (0) on success
 *******************************************************************************/
 #define RECV_OK         (uint8_t) 0
-#define PARITY_ERROR    (uint8_t) 1
-#define FRAME_ERROR     (uint8_t) 2
-#define OVERRUN_ERROR   (uint8_t) 3
+#define PARITY_ERROR    (uint8_t) '1'
+#define FRAME_ERROR     (uint8_t) '2'
+#define OVERRUN_ERROR   (uint8_t) '3'
 
-uint8_t uart_recv(uint8_t *byte) {
+uint8_t uart_recv(unsigned char *data) {
         uint8_t err = RECV_OK;
 
-        while (((UCSR0A >> RXC0) & 0x1) == 0) /* wait */ ;
+        while (((UCSR0A >> RXC0) & 0x1) == 0);
 
         if (((UCSR0A >> UPE0) & 0x1)) {
                 err = PARITY_ERROR;
-        } elif ((UCSR0A >> FE0) & 0x1) {
+        } else if ((UCSR0A >> FE0) & 0x1) {
                 err = FRAME_ERROR;
-        } elif ((UCSR0A >> DOR0) & 0x1) {
+        } else if ((UCSR0A >> DOR0) & 0x1) {
                 err = OVERRUN_ERROR;
         }
 
-        *byte = RDR0;
+        *data = UDR0;
 
         return err;
 }
@@ -94,36 +90,47 @@ uint8_t uart_recv(uint8_t *byte) {
 * @PB5: output, drive low (debug LED)
 *******************************************************************************/
 void led_init(void) {
-        DDRD = 0b11110000;
-        DDRB = 0b00101111;
+        DDRD = 0xF0;
+        DDRB = 0x2F;
         PORTD = 0;
         PORTB = 0;
 }
 
 /*******************************************************************************
-* led_send() - display binary repr of input on LEDs
+* led_send() - display binary representation of input data on LEDs
+* @data: MSB [7][6][5][4][3][2][1][0] LSB -> [B3][B2][B1][B0][D7][D6][D5][D4]
+* note: uart frames contain 7 data bits, port B3 LED should never turn on.
 *******************************************************************************/
-void led_send(const uint8_t data) {
+void led_send(const unsigned char data) {
         PORTB |= data >> 4;
         PORTD |= data << 4;
 }
 
 /*******************************************************************************
+* trap() - transmit error code and signal error status via debug LED
+* @err: error code, transmitted as "error: #"
+*******************************************************************************/
+void trap(const uint8_t err) {
+        static char msg[] = "error: #";
+        msg[7] = (char) err;
+        uart_send_msg(msg);
+
+        while (1) {
+                PORTB ^= 1 << PORTB5;
+                _delay_ms(100);
+        }
+}
+
+/*******************************************************************************
 * main() - listen on Rx and echo data to LEDs and Tx
 *******************************************************************************/
-#define uart_send_chunk(data)                                                  \
-        do {                                                                   \
-                uart_send('<');                                                \
-                uart_send(data);                                               \
-                uart_send('>');                                                \
-        } while (0)
-
 int main(void) {
+        static char msg[] = "<#>";
+        unsigned char data = 0;
+        uint8_t err = 0;
+
         led_init();
         uart_init();
-
-        uint8_t data = 0;
-        uint8_t err = 0;
 
         while (1) {
                 err = uart_recv(&data);
@@ -132,7 +139,8 @@ int main(void) {
                         trap(err);
                 }
 
-                uart_send_chunk(data);
+                msg[1] = (char) data;
+                uart_send_msg(msg);
                 led_send(data);
                 _delay_ms(250);
         }
