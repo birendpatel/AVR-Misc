@@ -19,6 +19,29 @@
 #include <util/setbaud.h>
 
 /*******************************************************************************
+* led_init() - configure LED pins
+* @PD4-7: output, drive low
+* @PB0-3: output, drive low
+* @PB5: output, drive low (debug LED)
+*******************************************************************************/
+void led_init(void) {
+        DDRD = 0xF0;
+        DDRB = 0x2F;
+        PORTD = 0;
+        PORTB = 0;
+}
+
+/*******************************************************************************
+* led_send() - display binary representation of input data on LEDs
+* @data: MSB [7][6][5][4][3][2][1][0] LSB -> [B3][B2][B1][B0][D7][D6][D5][D4]
+* note: uart frames contain 7 data bits, port B3 LED should never turn on.
+*******************************************************************************/
+void led_send(const unsigned char data) {
+        PORTB = (PORTB & 0xF0) | data >> 4; //retain B5 status
+        PORTD = data << 4;
+}
+
+/*******************************************************************************
 * uart_init() - configure asynchronous UART
 * @UCSR0B: enable TX and RX
 * @UCSROC: set 7 bits per frame and set even parity mode
@@ -81,29 +104,6 @@ uint8_t uart_recv(unsigned char *data) {
         *data = UDR0;
 
         return err;
-}
-
-/*******************************************************************************
-* led_init() - configure LED pins
-* @PD4-7: output, drive low
-* @PB0-3: output, drive low
-* @PB5: output, drive low (debug LED)
-*******************************************************************************/
-void led_init(void) {
-        DDRD = 0xF0;
-        DDRB = 0x2F;
-        PORTD = 0;
-        PORTB = 0;
-}
-
-/*******************************************************************************
-* led_send() - display binary representation of input data on LEDs
-* @data: MSB [7][6][5][4][3][2][1][0] LSB -> [B3][B2][B1][B0][D7][D6][D5][D4]
-* note: uart frames contain 7 data bits, port B3 LED should never turn on.
-*******************************************************************************/
-void led_send(const unsigned char data) {
-        PORTB |= data >> 4;
-        PORTD |= data << 4;
 }
 
 /*******************************************************************************

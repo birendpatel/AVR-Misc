@@ -3,16 +3,17 @@
 # MIT License
 # Build for echo.c
 
-CC = avr-gcc
-CFLAGS = -O3 -mmcu=atmega328p -Wall -Werror -Wextra -Wpedantic
-CFLAGS += -DF_CPU=16000000UL -DBAUD=76800UL
-
 MEMOP = flash:w:echo.hex:i
 DEVICE = ATmega328P
 PORT = /dev/ttyACM0
 TYPE = arduino
+BAUD_RATE = 38400
 
-.PHONY: flash clean
+CC = avr-gcc
+CFLAGS = -O3 -mmcu=atmega328p -Wall -Werror -Wextra -Wpedantic
+CFLAGS += -DF_CPU=16000000UL -DBAUD=$(BAUD_RATE)UL
+
+.PHONY: flash clean teletype
 
 echo.hex: echo.bin
 	avr-objcopy -v -O ihex $< $@
@@ -23,5 +24,10 @@ echo.bin: echo.c
 flash: echo.hex
 	avrdude -v -p $(DEVICE) -c $(TYPE) -P $(PORT) -U $(MEMOP)
 
+# stty may not support certain baud rates
+teletype:
+	stty -F $(PORT) $(BAUD_RATE) parenb -parodd cs7
+
 clean:
 	rm -f ./echo.bin ./echo.hex
+	stty -F $(PORT) sane
