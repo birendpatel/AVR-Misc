@@ -3,9 +3,8 @@
 * MIT License
 * Double ended queue for unsigned char data. The deque is constructed over a
 * pre-existing base array. Do not write to the base array while the deque is in
-* use. The API functions do not use any dynamic allocation, but if you want to
-* malloc/custom_alloc the struct deque then the API will still work just fine.
-*
+* use. The API functions do not use any dynamic allocation, but will work fine
+* if malloc/custom_alloc is used to allocate the struct deque.
 */
 
 #ifndef DEQUE_H
@@ -47,29 +46,41 @@ struct deque {
 * deque_new() - initialize double ended queue
 * @buf: base array
 * @cap: length of base array
-* Returns: error codes 0 thru 2
+* Returns: error code DEQUE_SUCCESS else DEQUE_CAP_BOUNDS or DEQUE_NULL_INPUT
 * note: do not read/write directly to base array after deque_new returns
 *******************************************************************************/
-uint8_t deque_new(struct deque *d, unsigned char *buf, const uint8_t cap);
+uint8_t deque_new(struct deque *dq, unsigned char *buf, const uint8_t cap);
 
 /*******************************************************************************
 * deque_push_back()
+* Returns: error code DEQUE_SUCCESS else DEQUE_NULL_INPUT or DEQUE_FULL
 *******************************************************************************/
-uint8_t deque_push_back(struct deque *d, const unsigned char data);
+uint8_t deque_push_back(struct deque *dq, const unsigned char data);
 
 /*******************************************************************************
 * deque_pop_back()
+* Returns: error code DEQUE_SUCCESS else DEQUE_NULL_INPUT or DEQUE_EMPTY
 *******************************************************************************/
-uint8_t deque_pop_back(struct deque *d, unsigned char *data);
+uint8_t deque_pop_back(struct deque *dq, unsigned char *data);
 
 /*******************************************************************************
 * deque_push_front()
+* Returns: error code DEQUE_SUCCESS else DEQUE_NULL_INPUT or DEQUE_FULL
 *******************************************************************************/
-uint8_t deque_push_front(struct deque *d, const unsigned char data);
+uint8_t deque_push_front(struct deque *dq, const unsigned char data);
 
 /*******************************************************************************
 * deque_pop_front()
+* Returns: error code DEQUE_SUCCESS else DEQUE_NULL_INPUT or DEQUE_EMPTY
 *******************************************************************************/
-uint8_t deque_pop_front(struct deque *d, unsigned char *data);
+uint8_t deque_pop_front(struct deque *dq, unsigned char *data);
+
+/*******************************************************************************
+* helper macros
+*******************************************************************************/
+#define deque_is_full(dq) ((dq).cap == (dq).len)
+#define deque_is_not_full(dq) (!((dq).cap == (dq).len))
+#define deque_is_empty(dq) ((dq).len == 0)
+#define deque_is_not_empty(dq) (!((dq).len == 0))
 
 #endif /* DEQUE_H */
