@@ -7,7 +7,7 @@ MEMOP = flash:w:echo.hex:i
 DEVICE = ATmega328P
 PORT = /dev/ttyACM0
 TYPE = arduino
-BAUD_RATE = 38400
+BAUD_RATE = 9600
 
 CC = avr-gcc
 CFLAGS = -O3 -mmcu=atmega328p -Wall -Werror -Wextra -Wpedantic
@@ -24,9 +24,8 @@ echo.bin: echo.c
 flash: echo.hex
 	avrdude -v -p $(DEVICE) -c $(TYPE) -P $(PORT) -U $(MEMOP)
 
-# stty may not support certain baud rates
-teletype:
-	stty -F $(PORT) $(BAUD_RATE) parenb -parodd cs7
-
 clean:
 	rm -f ./echo.bin ./echo.hex
+
+teletype:
+	stty -F $(PORT) $(BAUD_RATE) evenp

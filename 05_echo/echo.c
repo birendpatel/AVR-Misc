@@ -97,21 +97,33 @@ void uart_send_msg(const char *msg) {
 #define OVERRUN_ERROR   (uint8_t) '3'
 
 uint8_t uart_recv(unsigned char *data) {
+        uart_send_msg("in\n");
         uint8_t err = RECV_OK;
 
         while (((UCSR0A >> RXC0) & 0x1) == 0);
 
-        if (((UCSR0A >> UPE0) & 0x1)) {
+        unsigned char status = UCSR0A;
+        *data = UDR0;
+
+        _delay_ms(1);
+        unsigned char dummy = 0;
+        while (((UCSR0A >> RXC0) & 0x1)) {
+                _delay_ms(1);
+                dummy = UDR0;
+        }
+
+        if (((status >> UPE0) & 0x1)) {
+                uart_send_msg("parity error");
                 err = PARITY_ERROR;
-        } else if ((UCSR0A >> FE0) & 0x1) {
+        } else if ((status >> FE0) & 0x1) {
+                uart_send_msg("frame error");
                 err = FRAME_ERROR;
-        } else if ((UCSR0A >> DOR0) & 0x1) {
+        } else if ((status >> DOR0) & 0x1) {
+                uart_send_msg("overrun error");
                 err = OVERRUN_ERROR;
         }
 
-        *data = UDR0;
-
-        return err;
+        return err + dummy - dummy;
 }
 
 /*******************************************************************************
