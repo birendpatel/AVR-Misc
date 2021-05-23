@@ -42,10 +42,10 @@ uint8_t deque_push_back(struct deque *dq, const unsigned char data)
         }
 
         dq->buf[dq->back] = data;
-        dq->back = (dq->back + 1) % dq->cap;
+        dq->back = (uint8_t) ((dq->back + 1) % dq->cap);
         dq->len++;
 
-        return DEQUE_SUCESSS;
+        return DEQUE_SUCCESS;
 }
 
 /******************************************************************************
@@ -62,7 +62,7 @@ uint8_t deque_pop_back(struct deque *dq, unsigned char *data)
                 return DEQUE_EMPTY;
         }
 
-        dq->back = (dq->back + dq->cap - 1) % dq->cap;
+        dq->back = (uint8_t) ((dq->back + dq->cap - 1) % dq->cap);
         *data = dq->buf[dq->back];
         dq->len--;
 
@@ -84,7 +84,7 @@ uint8_t deque_push_front(struct deque *dq, const unsigned char data)
                 return DEQUE_FULL;
         }
 
-        dq->front = (dq->front + dq->cap - 1) % dq->cap;
+        dq->front = (uint8_t) ((dq->front + dq->cap - 1) % dq->cap);
         dq->buf[dq->front] = data;
         dq->len++;
 
@@ -106,7 +106,7 @@ uint8_t deque_pop_front(struct deque *dq, unsigned char *data)
         }
 
         *data = dq->buf[dq->front];
-        dq->front = (dq->front + 1) % dq->cap;
+        dq->front = (uint8_t) ((dq->front + 1) % dq->cap);
         dq->len--;
 
         return DEQUE_SUCCESS;
