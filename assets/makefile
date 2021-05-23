@@ -30,13 +30,10 @@ unity.o: unity.h unity_internals.h
 #------------------------------------------------------------------------------#
 
 test_deque: unity.o deque.o test_deque.o
-	$(CC) -o $@ $^
 
 test_deque.o: test_deque.c deque.h unity.h unity_internals.h
-	$(CC) $(CFLAGS) -c -o $@ $<
 
 deque.o: deque.c deque.h
-	$(CC) $(CFLAGS) -c -o $@ $<
 
 #------------------------------------------------------------------------------#
 # phony
