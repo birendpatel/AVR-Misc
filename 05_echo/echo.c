@@ -13,10 +13,11 @@
         #error "BAUD not defined"
 #endif
 
-#include <avr/io.h>
 #include <stdint.h>
+#include <avr/io.h>
 #include <util/delay.h>
 #include <util/setbaud.h>
+#include "deque.h"
 
 void led_init(void);
 void led_send(const unsigned char data);
