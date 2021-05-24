@@ -77,6 +77,7 @@ uint8_t deque_pop_front(struct deque *dq, unsigned char *data);
 
 /*******************************************************************************
 * helper macros
+* note: macros expect a struct deque, not a reference to a struct deque
 *******************************************************************************/
 #define deque_is_full(dq) ((dq).cap == (dq).len)
 #define deque_is_not_full(dq) (!((dq).cap == (dq).len))
@@ -84,7 +85,7 @@ uint8_t deque_pop_front(struct deque *dq, unsigned char *data);
 #define deque_is_empty(dq) ((dq).len == 0)
 #define deque_is_not_empty(dq) (!((dq).len == 0))
 
-#define deque_peek_back(dq) ((dq).buf[(dq).back])
+#define deque_peek_back(dq) ((dq).buf[(((dq).back + (dq).cap - 1) % (dq).cap)])
 #define deque_peek_front(dq) ((dq).buf[(dq).front])
 
 #endif /* DEQUE_H */

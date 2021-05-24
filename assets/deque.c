@@ -8,8 +8,7 @@
 
 /******************************************************************************/
 
-uint8_t deque_new(struct deque *dq, unsigned char *buf, const uint8_t cap)
-{
+uint8_t deque_new(struct deque *dq, unsigned char *buf, const uint8_t cap) {
         if (!buf) {
                 return DEQUE_NULL_INPUT;
         }
@@ -31,8 +30,7 @@ uint8_t deque_new(struct deque *dq, unsigned char *buf, const uint8_t cap)
 * place data at current index then increment
 */
 
-uint8_t deque_push_back(struct deque *dq, const unsigned char data)
-{
+uint8_t deque_push_back(struct deque *dq, const unsigned char data) {
         if (!dq) {
                 return DEQUE_NULL_INPUT;
         }
@@ -52,8 +50,7 @@ uint8_t deque_push_back(struct deque *dq, const unsigned char data)
 * decrement index then get data
 */
 
-uint8_t deque_pop_back(struct deque *dq, unsigned char *data)
-{
+uint8_t deque_pop_back(struct deque *dq, unsigned char *data) {
         if (!dq || !data) {
                 return DEQUE_NULL_INPUT;
         }
@@ -74,8 +71,7 @@ uint8_t deque_pop_back(struct deque *dq, unsigned char *data)
 * decrement then place data
 */
 
-uint8_t deque_push_front(struct deque *dq, const unsigned char data)
-{
+uint8_t deque_push_front(struct deque *dq, const unsigned char data) {
         if (!dq) {
                 return DEQUE_NULL_INPUT;
         }
@@ -95,8 +91,7 @@ uint8_t deque_push_front(struct deque *dq, const unsigned char data)
 * get data at current index then increment
 */
 
-uint8_t deque_pop_front(struct deque *dq, unsigned char *data)
-{
+uint8_t deque_pop_front(struct deque *dq, unsigned char *data) {
         if (!dq || !data) {
                 return DEQUE_NULL_INPUT;
         }
