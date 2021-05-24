@@ -49,8 +49,7 @@ flash: echo.hex
 # utilities
 #------------------------------------------------------------------------------#
 clean:
-	rm -f ./echo.bin ./echo.hex
+	rm -f ./echo.bin ./echo.hex *.o
 
-# TODO REMOVE EVENP ADD XON XOFF
 teletype:
-	stty -F $(PORT) $(BAUD_RATE) evenp
+	stty -F $(PORT) $(BAUD_RATE) ixon
