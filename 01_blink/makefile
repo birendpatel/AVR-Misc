@@ -26,7 +26,7 @@ DEVICE = ATmega328P
 PORT = /dev/ttyACM0
 TYPE = arduino
 
-flash: hello.hex
+flash: blink.hex
 	avrdude -v -p $(DEVICE) -c $(TYPE) -P $(PORT) -U $(MEMOP)
 
 clean:

@@ -37,7 +37,7 @@ echo.bin: echo.o deque.o
 echo.o: echo.c deque.h
 	$(CC) $(CFLAGS) -c $(DEFS) $(IPATH) $< -o $@
 
-deque.c: deque.h
+deque.o: deque.h
 
 #------------------------------------------------------------------------------#
 # programmer

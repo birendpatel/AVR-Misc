@@ -38,6 +38,9 @@ void led_init(void)
         DDRB = 0x2F;
         PORTD = 0;
         PORTB = 0;
+
+        PORTB = 0;
+        PORTD = 0;
 }
 
 /*******************************************************************************
@@ -152,12 +155,15 @@ void trap(const uint8_t err)
 
 /*******************************************************************************
 * main() - listen on Rx for a newline terminated string of data and then echo
-that data to LEDs and Tx. 
+that data to LEDs and Tx.
 *******************************************************************************/
 #define BUF_SIZE 64
 
 int main(void)
 {
+        led_init();
+        uart_init();
+
         uint8_t err = 0;
         unsigned char buf[BUF_SIZE] = {0};
         struct deque fifo;
@@ -167,9 +173,6 @@ int main(void)
         if (err) {
                 trap(err);
         }
-
-        led_init();
-        uart_init();
 
         while (1) {
                 err = uart_recv(&fifo, BUF_SIZE / 2);
@@ -195,4 +198,6 @@ int main(void)
                         }
                 }
         }
+
+        return 0;
 }
