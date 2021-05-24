@@ -489,118 +489,6 @@ void test_macro_deque_peek_front(void) {
         TEST_ASSERT_EQUAL(10, deque_peek_front(dq));
 }
 
-void test_max_fifo_push_then_pop_iteration(void) {
-        //arrange
-        struct deque dq;
-        int err;
-        unsigned char data;
-        unsigned char buf[255];
-
-        //act
-        deque_new(&dq, buf, 255);
-
-        //act-assert
-        for (uint8_t i = 0; i < 255; i++) {
-                deque_push_back(&dq, (unsigned char) i);
-                err = deque_pop_front(&dq, &data);
-
-                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
-                TEST_ASSERT_EQUAL_UINT8(i, data);
-        }
-}
-
-void test_mid_fifo_push_then_pop_iteration(void) {
-        //arrange
-        struct deque dq;
-        int err;
-        unsigned char data;
-        unsigned char buf[129];
-
-        //act
-        deque_new(&dq, buf, 129);
-
-        //act-assert
-        for (uint8_t i = 0; i < 129; i++) {
-                deque_push_back(&dq, (unsigned char) i);
-                err = deque_pop_front(&dq, &data);
-
-                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
-                TEST_ASSERT_EQUAL_UINT8(i, data);
-        }
-}
-
-void test_singleton_fifo_push_then_pop_iteration(void) {
-        //arrange
-        struct deque dq;
-        int err;
-        unsigned char data;
-        unsigned char buf[1];
-
-        //act
-        deque_new(&dq, buf, 1);
-
-        //act-assert
-        for (uint8_t i = 0; i < 1; i++) {
-                deque_push_back(&dq, (unsigned char) i);
-                err = deque_pop_front(&dq, &data);
-
-                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
-                TEST_ASSERT_EQUAL_UINT8(i, data);
-        }
-}
-
-void test_fifo_fill_completely_then_purge(void) {
-        //arrange
-        struct deque dq;
-        int err;
-        unsigned char data;
-        unsigned char buf[255];
-
-        //act
-        deque_new(&dq, buf, 255);
-
-        for (uint8_t i = 0; i < 255; i++) {
-                deque_push_back(&dq, (unsigned char) i);
-        }
-
-        //assert
-        for (uint8_t i = 0; i < 255; i++) {
-                err = deque_pop_front(&dq, &data);
-                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
-                TEST_ASSERT_EQUAL_UINT8(i, data);
-        }
-}
-
-void test_fifo_fill_completely_then_purge_and_repeat(void) {
-        //arrange
-        struct deque dq;
-        int err;
-        unsigned char data;
-        unsigned char buf[255];
-
-        //act
-        deque_new(&dq, buf, 255);
-
-        for (uint8_t i = 0; i < 255; i++) {
-                deque_push_back(&dq, (unsigned char) i);
-        }
-
-        for (uint8_t i = 0; i < 255; i++) {
-                deque_pop_front(&dq, &data);
-        }
-
-        for (uint8_t i = 255; i != 0; i--) {
-                deque_push_back(&dq, (unsigned char) i);
-        }
-
-        //assert
-        for (uint8_t i = 255; i != 0; i--) {
-                err = deque_pop_front(&dq, &data);
-                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
-                TEST_ASSERT_EQUAL_UINT8(i, data);
-        }
-}
-
 /******************************************************************************/
 
 void test_max_lifo_push_then_pop_iteration_back(void) {
@@ -831,6 +719,225 @@ void test_lifo_fill_completely_then_purge_and_repeat_front(void) {
 
 /******************************************************************************/
 
+void test_mixed_max_push_back_pop_front_iteration(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[255];
+
+        //act
+        deque_new(&dq, buf, 255);
+
+        //act-assert
+        for (uint8_t i = 0; i < 255; i++) {
+                deque_push_back(&dq, i);
+                err = deque_pop_front(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+void test_mixed_mid_push_back_pop_front_iteration(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[129];
+
+        //act
+        deque_new(&dq, buf, 129);
+
+        //act-assert
+        for (uint8_t i = 0; i < 129; i++) {
+                deque_push_back(&dq, i);
+                err = deque_pop_front(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+void test_mixed_singleton_push_back_pop_front_iteration(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[1];
+
+        //act
+        deque_new(&dq, buf, 1);
+
+        //act-assert
+        for (uint8_t i = 0; i < 1; i++) {
+                deque_push_back(&dq, i);
+                err = deque_pop_front(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+void test_mixed_max_push_front_pop_back_iteration(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[255];
+
+        //act
+        deque_new(&dq, buf, 255);
+
+        //act-assert
+        for (uint8_t i = 0; i < 255; i++) {
+                deque_push_front(&dq, i);
+                err = deque_pop_back(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+void test_mixed_mid_push_front_pop_back_iteration(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[129];
+
+        //act
+        deque_new(&dq, buf, 129);
+
+        //act-assert
+        for (uint8_t i = 0; i < 129; i++) {
+                deque_push_front(&dq, i);
+                err = deque_pop_back(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+void test_mixed_singleton_push_front_pop_back_iteration(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[1];
+
+        //act
+        deque_new(&dq, buf, 1);
+
+        //act-assert
+        for (uint8_t i = 0; i < 1; i++) {
+                deque_push_front(&dq, i);
+                err = deque_pop_back(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+void test_fifo_fill_completely_then_purge_back(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[255];
+
+        //act
+        deque_new(&dq, buf, 255);
+
+        for (uint8_t i = 0; i < 255; i++) {
+                deque_push_back(&dq, (unsigned char) i);
+        }
+
+        //assert
+        for (uint8_t i = 0; i < 255; i++) {
+                err = deque_pop_front(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+void test_fifo_fill_completely_then_purge_and_repeat_back(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[255];
+
+        //act
+        deque_new(&dq, buf, 255);
+
+        for (uint8_t i = 0; i < 255; i++) {
+                deque_push_back(&dq, (unsigned char) i);
+        }
+
+        for (uint8_t i = 0; i < 255; i++) {
+                deque_pop_front(&dq, &data);
+        }
+
+        for (uint8_t i = 255; i != 0; i--) {
+                deque_push_back(&dq, (unsigned char) i);
+        }
+
+        //assert
+        for (uint8_t i = 255; i != 0; i--) {
+                err = deque_pop_front(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+
+void test_fifo_fill_completely_then_purge_front(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[255];
+
+        //act
+        deque_new(&dq, buf, 255);
+
+        for (uint8_t i = 0; i < 255; i++) {
+                deque_push_front(&dq, (unsigned char) i);
+        }
+
+        //assert
+        for (uint8_t i = 0; i < 255; i++) {
+                err = deque_pop_back(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
+void test_fifo_fill_completely_then_purge_and_repeat_front(void) {
+        //arrange
+        struct deque dq;
+        int err;
+        unsigned char data;
+        unsigned char buf[255];
+
+        //act
+        deque_new(&dq, buf, 255);
+
+        for (uint8_t i = 0; i < 255; i++) {
+                deque_push_front(&dq, (unsigned char) i);
+        }
+
+        for (uint8_t i = 0; i < 255; i++) {
+                deque_pop_back(&dq, &data);
+        }
+
+        for (uint8_t i = 255; i != 0; i--) {
+                deque_push_front(&dq, (unsigned char) i);
+        }
+
+        //assert
+        for (uint8_t i = 255; i != 0; i--) {
+                err = deque_pop_back(&dq, &data);
+                TEST_ASSERT_EQUAL(err, DEQUE_SUCCESS);
+                TEST_ASSERT_EQUAL_UINT8(i, data);
+        }
+}
+
 int main(void)
 {
         UNITY_BEGIN();
@@ -876,13 +983,6 @@ int main(void)
         RUN_TEST(test_macro_deque_peek_back);
         RUN_TEST(test_macro_deque_peek_front);
 
-        //fifo tests
-        RUN_TEST(test_max_fifo_push_then_pop_iteration);
-        RUN_TEST(test_mid_fifo_push_then_pop_iteration);
-        RUN_TEST(test_singleton_fifo_push_then_pop_iteration);
-        RUN_TEST(test_fifo_fill_completely_then_purge);
-        RUN_TEST(test_fifo_fill_completely_then_purge_and_repeat);
-
         //lifo tests from stack side
         RUN_TEST(test_max_lifo_push_then_pop_iteration_back);
         RUN_TEST(test_mid_lifo_push_then_pop_iteration_back);
@@ -897,9 +997,17 @@ int main(void)
         RUN_TEST(test_lifo_fill_completely_then_purge_front);
         RUN_TEST(test_lifo_fill_completely_then_purge_and_repeat_front);
 
-        //fifo-lifo mix tests
-
-        //iter tests
+        //fifo mix tests
+        RUN_TEST(test_mixed_max_push_back_pop_front_iteration);
+        RUN_TEST(test_mixed_mid_push_back_pop_front_iteration);
+        RUN_TEST(test_mixed_singleton_push_back_pop_front_iteration);
+        RUN_TEST(test_mixed_max_push_front_pop_back_iteration);
+        RUN_TEST(test_mixed_mid_push_front_pop_back_iteration);
+        RUN_TEST(test_mixed_singleton_push_front_pop_back_iteration);
+        RUN_TEST(test_fifo_fill_completely_then_purge_back);
+        RUN_TEST(test_fifo_fill_completely_then_purge_and_repeat_back);
+        RUN_TEST(test_fifo_fill_completely_then_purge_front);
+        RUN_TEST(test_fifo_fill_completely_then_purge_and_repeat_front);
 
         return UNITY_END();
 }
