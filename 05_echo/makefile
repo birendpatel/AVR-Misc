@@ -18,7 +18,7 @@ BAUD_RATE = 9600
 # compiler
 #------------------------------------------------------------------------------#
 CC = avr-gcc
-CFLAGS = -O3 -mmcu=atmega328p -Wall -Werror -Wextra -Wpedantic
+CFLAGS = -O1 -mmcu=atmega328p -Wall -Werror -Wextra -Wpedantic
 DEFS = -DF_CPU=16000000UL -DBAUD=$(BAUD_RATE)UL
 IPATH = -I../assets/
 
@@ -32,7 +32,7 @@ echo.hex: echo.bin
 	avr-objcopy -v -O ihex $< $@
 
 echo.bin: echo.o deque.o
-	$(CC) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 echo.o: echo.c deque.h
 	$(CC) $(CFLAGS) -c $(DEFS) $(IPATH) $< -o $@
