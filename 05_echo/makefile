@@ -52,4 +52,4 @@ clean:
 	rm -f ./echo.bin ./echo.hex *.o
 
 teletype:
-	stty -F $(PORT) $(BAUD_RATE) ixon
+	stty -F $(PORT) $(BAUD_RATE)

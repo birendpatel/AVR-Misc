@@ -76,7 +76,6 @@ void uart_send(const unsigned char data)
 /*******************************************************************************
 * uart_recv() - receive frames until frame containing newline or threshold met
 * @fifo: data from received frames are queued to this buffer
-* @threshold: transmit XOFF when fifo.cap == threshold
 * Returns: nonzero error code on failure or RECV_OK (0) on success
 *******************************************************************************/
 
@@ -85,6 +84,7 @@ void uart_send(const unsigned char data)
 #define FRAME_ERROR     (uint8_t) '2'
 #define OVERRUN_ERROR   (uint8_t) '3'
 #define FIFO_ERROR      (uint8_t) '4'
+#define BAD_BREAK       (uint8_t) '5'
 
 uint8_t uart_recv(struct deque *fifo)
 {
@@ -109,11 +109,13 @@ uint8_t uart_recv(struct deque *fifo)
                         return FIFO_ERROR;
                 }
 
-                if (data == '\n') {
+                if (data == (unsigned char) '\n') {
                         return RECV_OK;
                 }
 
         }
+
+        return BAD_BREAK;
 }
 
 /*******************************************************************************
