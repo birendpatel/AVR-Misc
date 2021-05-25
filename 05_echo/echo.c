@@ -23,7 +23,7 @@ void led_init(void);
 void led_send(const unsigned char data);
 void uart_init(void);
 void uart_send(const unsigned char data);
-uint8_t uart_recv(struct deque *fifo, uint8_t threshold);
+uint8_t uart_recv(struct deque *fifo);
 void trap(const uint8_t err);
 
 /*******************************************************************************
@@ -80,22 +80,16 @@ void uart_send(const unsigned char data)
 * Returns: nonzero error code on failure or RECV_OK (0) on success
 *******************************************************************************/
 
-#define XON     ((unsigned char) 0x11)
-#define XOFF    ((unsigned char) 0x13)
-
 #define RECV_OK         (uint8_t) 0
 #define PARITY_ERROR    (uint8_t) '1'
 #define FRAME_ERROR     (uint8_t) '2'
 #define OVERRUN_ERROR   (uint8_t) '3'
 #define FIFO_ERROR      (uint8_t) '4'
 
-uint8_t uart_recv(struct deque *fifo, uint8_t threshold)
+uint8_t uart_recv(struct deque *fifo)
 {
-        uint8_t err = RECV_OK;
         unsigned char data;
         unsigned char status;
-
-        uart_send(XON);
 
         while (1) {
                 while (((UCSR0A >> RXC0) & 0x1) == 0) /* spin */;
@@ -104,31 +98,22 @@ uint8_t uart_recv(struct deque *fifo, uint8_t threshold)
                 data = UDR0;
 
                 if (((status >> UPE0) & 0x1)) {
-                        err = PARITY_ERROR;
-                        break;
+                        return PARITY_ERROR;
                 } else if ((status >> FE0) & 0x1) {
-                        err = FRAME_ERROR;
-                        break;
+                        return FRAME_ERROR;
                 } else if ((status >> DOR0) & 0x1) {
-                        err = OVERRUN_ERROR;
-                        break;
+                        return OVERRUN_ERROR;
                 }
 
-                err = deque_push_back(fifo, data);
-
-                if (err) {
-                        err = FIFO_ERROR;
-                        break;
+                if (deque_push_back(fifo, data)) {
+                        return FIFO_ERROR;
                 }
 
-                if (fifo->len >= threshold || data == '\n') {
-                        break;
+                if (data == '\n') {
+                        return RECV_OK;
                 }
 
         }
-
-        uart_send(XOFF);
-        return err;
 }
 
 /*******************************************************************************
@@ -140,7 +125,7 @@ void trap(const uint8_t err)
         static char msg[10] = "error: #\n";
         msg[7] = (char) err;
 
-        for (uint8_t i = 0; i < 10; i++) {
+        for (uint8_t i = 0; i < 9; i++) {
                 uart_send(msg[i]);
         }
 
@@ -172,7 +157,7 @@ int main(void)
         }
 
         while (1) {
-                err = uart_recv(&fifo, BUF_SIZE / 2);
+                err = uart_recv(&fifo);
 
                 if (err) {
                         trap(err);
@@ -194,6 +179,8 @@ int main(void)
                                 break;
                         }
                 }
+
+                led_send(0x00);
         }
 
         return 0;
