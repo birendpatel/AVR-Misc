@@ -1,3 +1,7 @@
+#doxygen
+**/html
+**/latex
+
 # Prerequisites
 *.d
 
