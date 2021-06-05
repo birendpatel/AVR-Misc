@@ -28,6 +28,7 @@
 #define PULLUP  2
 
 /* digital I/O pins for the ATmega328P SPDIP pin configuration */
+/* do NOT modify these names or values - they are flash memory indices */
 #define PB0 (uint8_t) 0
 #define PB1 (uint8_t) 1
 #define PB2 (uint8_t) 2
@@ -96,12 +97,12 @@
 #define ARDUINO_D11_PWM         PB3
 #define ARDUINO_D12             PB4
 #define ARDUINO_D13             PB5
-#define ARDUINO_D14             PC0
-#define ARDUINO_D15             PC1
-#define ARDUINO_D16             PC2
-#define ARDUINO_D17             PC3
-#define ARDUINO_D18_SDA         PC4
-#define ARDUINO_D19_SCL         PC5
+#define ARDUINO_A0              PC0
+#define ARDUINO_A1              PC1
+#define ARDUINO_A2              PC2
+#define ARDUINO_A3              PC3
+#define ARDUINO_A4_SDA          PC4
+#define ARDUINO_A5_SCL          PC5
 #define ARDUINO_RESET           PC6
 
 /*******************************************************************************
