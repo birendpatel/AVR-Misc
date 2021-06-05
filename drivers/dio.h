@@ -18,6 +18,7 @@
 #define DIO_VALUE       3 /**< @brief input value argument is invalid         */
 #define DIO_PULLUP      4 /**< @brief cannot engage pullup on output pin      */
 #define DIO_DRIVE       5 /**< @brief cannot drive input pin high or low      */
+#define DIO_NULL        6 /**< @brief input pointer is null                   */
 
 /* api mode and value args */
 #define INPUT   0
@@ -79,37 +80,37 @@
 /*******************************************************************************
 * @function dio_open
 * @brief Configure a pin for either input or output
-* @param[in] pin One of PIN1 thru PIN28
+* @param[in] name One of PIN1 thru PIN28
 * @param[in] mode Either INPUT or OUTPUT
-* @return DIO_SUCCESS, DIO_MODE, or DIO_LOOKUP
+* @return DIO_SUCCESS, DIO_MODE or DIO_LOOKUP
 *******************************************************************************/
-uint8_t dio_open(uint8_t pin, uint8_t mode);
+uint8_t dio_open(uint8_t name, uint8_t mode);
 
 /*******************************************************************************
 * @function dio_write
 * @brief Drive an output pin or configure the pullup resistor on an input pin.
-* @param[in] pin One of PIN1 thru PIN28
+* @param[in] name One of PIN1 thru PIN28
 * @param[in] value One of HIGH, LOW, or PULLUP
-* @return DIO_SUCCESS, DIO_LOOKUP, DIO_VALUE, DIO_PULLUP, or DIO_DRIVE
+* @return DIO_SUCCESS, DIO_LOOKUP, DIO_VALUE, DIO_PULLUP or DIO_DRIVE
 *******************************************************************************/
-uint8_t dio_write(uint8_t pin, uint8_t value);
+uint8_t dio_write(uint8_t name, uint8_t value);
 
 /*******************************************************************************
 * @function dio_read
 * @brief Read voltage on an input pin
-* @param[in] pin One of PIN1 thru PIN28
+* @param[in] name One of PIN1 thru PIN28
 * @param[out] value Either HIGH or LOW on successful return
-* @return DIO_SUCCESS, DIO_VALUE, or DIO_LOOKUP
+* @return DIO_SUCCESS, DIO_NULL or DIO_LOOKUP
 *******************************************************************************/
-uint8_t dio_read(uint8_t pin, uint8_t *value);
+uint8_t dio_read(uint8_t name, uint8_t *value);
 
 /*******************************************************************************
 * @function dio_toggle
-* @brief Toggle a pin from HIGH to LOW or from LOW to HIGH
-* @param[in] pin One of PIN1 thru PIN28
+* @brief Toggle an output pin from HIGH to LOW or from LOW to HIGH
+* @param[in] name One of PIN1 thru PIN28
 * @param[out] value Contains new pin status as either HIGH or LOW. May be NULL.
 * @return DIO_SUCCESS or DIO_LOOKUP
 *******************************************************************************/
-uint8_t dio_toggle(uint8_t pin, uint8_t *value);
+uint8_t dio_toggle(uint8_t name, uint8_t *value);
 
 #endif /* DIO_H */
