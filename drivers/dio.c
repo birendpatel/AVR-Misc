@@ -12,7 +12,7 @@
 
 /*******************************************************************************
 * @struct name_attributes
-* @brief Contains relevant registers details for a given pin name
+* @brief Contains relevant register details for a given pin name
 * @var name_attributes::pin
 *       @brief pointer to the PIN register
 * @var name_attributes::mask
@@ -29,35 +29,40 @@ struct name_attributes {
 /*******************************************************************************
 * @var lookup
 * @brief Lookup table to access registers associated with a given pin name
-* @details On the ATmega328P due to_SFR_IO8() offsets, the data direction and
+* @details Due to_SFR_IO8() offsets on the ATmega328P, the data direction and
 * port registers can be accessed via pointer arithmetic on the associated pin
-* register. Therefore, the flash table need only contain a reference to the pin
-* register. DDR = PIN + 1 and PORT = PIN + 2.
+* register. The flash table only needs a reference to the pin register because
+* DDR = PIN + 1 and PORT = PIN + 2.
 *******************************************************************************/
 static const struct name_attributes lookup[] PROGMEM = {
-        [PIN1]  = { &PINC, 1 << PINC6, PINC6 },
-        [PIN2]  = { &PIND, 1 << PIND0, PIND0 },
-        [PIN3]  = { &PIND, 1 << PIND1, PIND1 },
-        [PIN4]  = { &PIND, 1 << PIND2, PIND2 },
-        [PIN5]  = { &PIND, 1 << PIND3, PIND3 },
-        [PIN6]  = { &PIND, 1 << PIND4, PIND4 },
-        [PIN9]  = { &PINB, 1 << PINB6, PINB6 },
-        [PIN10] = { &PINB, 1 << PINB7, PINB7 },
-        [PIN11] = { &PIND, 1 << PIND5, PIND5 },
-        [PIN12] = { &PIND, 1 << PIND6, PIND6 },
-        [PIN13] = { &PIND, 1 << PIND7, PIND7 },
-        [PIN14] = { &PINB, 1 << PINB0, PINB0 },
-        [PIN15] = { &PINB, 1 << PINB1, PINB1 },
-        [PIN16] = { &PINB, 1 << PINB2, PINB2 },
-        [PIN17] = { &PINB, 1 << PINB3, PINB3 },
-        [PIN18] = { &PINB, 1 << PINB4, PINB4 },
-        [PIN19] = { &PINB, 1 << PINB5, PINB5 },
-        [PIN23] = { &PINC, 1 << PINC0, PINC0 },
-        [PIN24] = { &PINC, 1 << PINC1, PINC1 },
-        [PIN25] = { &PINC, 1 << PINC2, PINC2 },
-        [PIN26] = { &PINC, 1 << PINC3, PINC3 },
-        [PIN27] = { &PINC, 1 << PINC4, PINC4 },
-        [PIN28] = { &PINC, 1 << PINC5, PINC5 },
+        /* Port B */
+        [PB0] = { &PINB, 1 << PINB0, PINB0 },
+        [PB1] = { &PINB, 1 << PINB1, PINB1 },
+        [PB2] = { &PINB, 1 << PINB2, PINB2 },
+        [PB3] = { &PINB, 1 << PINB3, PINB3 },
+        [PB4] = { &PINB, 1 << PINB4, PINB4 },
+        [PB5] = { &PINB, 1 << PINB5, PINB5 },
+        [PB6]  = { &PINB, 1 << PINB6, PINB6 },
+        [PB7] = { &PINB, 1 << PINB7, PINB7 },
+
+        /* Port C */
+        [PC0] = { &PINC, 1 << PINC0, PINC0 },
+        [PC1] = { &PINC, 1 << PINC1, PINC1 },
+        [PC2] = { &PINC, 1 << PINC2, PINC2 },
+        [PC3] = { &PINC, 1 << PINC3, PINC3 },
+        [PC4] = { &PINC, 1 << PINC4, PINC4 },
+        [PC5] = { &PINC, 1 << PINC5, PINC5 },
+        [PC6]  = { &PINC, 1 << PINC6, PINC6 },
+
+        /* Port D */
+        [PD0]  = { &PIND, 1 << PIND0, PIND0 },
+        [PD1]  = { &PIND, 1 << PIND1, PIND1 },
+        [PD2]  = { &PIND, 1 << PIND2, PIND2 },
+        [PD3]  = { &PIND, 1 << PIND3, PIND3 },
+        [PD4]  = { &PIND, 1 << PIND4, PIND4 },
+        [PD5] = { &PIND, 1 << PIND5, PIND5 },
+        [PD6] = { &PIND, 1 << PIND6, PIND6 },
+        [PD7] = { &PIND, 1 << PIND7, PIND7 },
 };
 
 /*******************************************************************************
@@ -176,7 +181,7 @@ uint8_t dio_read(const uint8_t name, uint8_t *const value)
 
 /******************************************************************************/
 
-uint8_t dio_toggle(const uint8_t name, uint8_t *const value)
+uint8_t dio_toggle(const uint8_t name)
 {
         struct name_attributes n_attr;
 
@@ -187,10 +192,6 @@ uint8_t dio_toggle(const uint8_t name, uint8_t *const value)
         volatile uint8_t *port = n_attr.pin + 2;
 
         *port ^= n_attr.mask;
-
-        if (value) {
-                *value = (*port >> n_attr.pos) & 0x1;
-        }
 
         return DIO_SUCCESS;
 }

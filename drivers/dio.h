@@ -27,7 +27,7 @@
 #define HIGH    1
 #define PULLUP  2
 
-/* map: SPDIP physical layout to pin configurations */
+/* digital I/O pins for the ATmega328P SPDIP pin configuration */
 #define PB0 (uint8_t) 0
 #define PB1 (uint8_t) 1
 #define PB2 (uint8_t) 2
@@ -52,7 +52,9 @@
 #define PD6 (uint8_t) 20
 #define PD7 (uint8_t) 21
 
-/* map: pin configurations to digital I/O pin interface */
+/* PINx macros are optional, use them if they provide you better abstraction. */
+/* The macro names map to the exact pin numbers on the SPDIP physical layout. */
+/* You can modify these macro names to whatever you prefer or keep them as-is */
 #define PIN1    PC6
 #define PIN2    PD0
 #define PIN3    PD1
@@ -76,6 +78,31 @@
 #define PIN26   PC3
 #define PIN27   PC4
 #define PIN28   PC5
+
+/* ARDUINO_PINx macros are helpful when using an arudino board like Uno Rev3. */
+/* These macros map the mcu port to the arudino digital pin numbers. */
+/* You can also modify these however you wish */
+#define ARDUINO_D0_RX           PD0
+#define ARDUINO_D1_TX           PD1
+#define ARDUINO_D2              PD2
+#define ARDUINO_D3_PWM          PD3
+#define ARDUINO_D4              PD4
+#define ARDUINO_D5_PWM          PD5
+#define ARDUINO_D6_PWM          PD6
+#define ARDUINO_D7              PD7
+#define ARDUINO_D8              PB0
+#define ARDUINO_D9_PWM          PB1
+#define ARDUINO_D10_PWM         PB2
+#define ARDUINO_D11_PWM         PB3
+#define ARDUINO_D12             PB4
+#define ARDUINO_D13             PB5
+#define ARDUINO_D14             PC0
+#define ARDUINO_D15             PC1
+#define ARDUINO_D16             PC2
+#define ARDUINO_D17             PC3
+#define ARDUINO_D18_SDA         PC4
+#define ARDUINO_D19_SCL         PC5
+#define ARDUINO_RESET           PC6
 
 /*******************************************************************************
 * @function dio_open
@@ -108,9 +135,8 @@ uint8_t dio_read(uint8_t name, uint8_t *value);
 * @function dio_toggle
 * @brief Toggle an output pin from HIGH to LOW or from LOW to HIGH
 * @param[in] name One of PIN1 thru PIN28
-* @param[out] value Contains new pin status as either HIGH or LOW. May be NULL.
 * @return DIO_SUCCESS or DIO_LOOKUP
 *******************************************************************************/
-uint8_t dio_toggle(uint8_t name, uint8_t *value);
+uint8_t dio_toggle(uint8_t name);
 
 #endif /* DIO_H */
