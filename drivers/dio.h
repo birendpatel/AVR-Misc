@@ -14,7 +14,6 @@
 #define DIO_ERR_MODE    (uint8_t) 2 /**< @brief Input mode is invalid.        */
 #define DIO_ERR_VALUE   (uint8_t) 3 /**< @brief Input value is invalid.       */
 #define DIO_ERR_NULL    (uint8_t) 4 /**< @brief Input pointer is null.        */
-#define DIO_UNDEFINED   (uint8_t) 5 /**< @brief Internal bug. Please report!  */
 
 /* API mode and value arguments */
 #define INPUT   (uint8_t) 0

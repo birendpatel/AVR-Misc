@@ -74,13 +74,12 @@ uint8_t dio_open(const dio_config *const table, const uint8_t n)
                 return DIO_ERR_NULL;
         }
 
-        if (!n) {
+        if (n == 0) {
                 return DIO_ERR_VALUE;
         }
 
-        uint8_t err = DIO_UNDEFINED;
-
         for (uint8_t i = 0; i < n; i++) {
+                uint8_t err = 0;
                 dio_config entry = table[i];
 
                 err = dio_open_entry(entry.pin, entry.mode);
@@ -104,7 +103,7 @@ uint8_t dio_open(const dio_config *const table, const uint8_t n)
 static uint8_t dio_open_entry(const uint8_t pin, const uint8_t mode)
 {
         if (pin > PD7) {
-                return DIO_ERR_LOOKUP;
+                return DIO_ERR_PIN;
         }
 
         attributes attr = {0};
@@ -133,7 +132,7 @@ static uint8_t dio_open_entry(const uint8_t pin, const uint8_t mode)
 uint8_t dio_write(const uint8_t pin, const uint8_t value)
 {
         if (pin > PD7) {
-                return DIO_ERR_LOOKUP;
+                return DIO_ERR_PIN;
         }
 
         attributes attr = {0};
@@ -167,7 +166,7 @@ uint8_t dio_write(const uint8_t pin, const uint8_t value)
 uint8_t dio_read(const uint8_t pin, uint8_t *const value)
 {
         if (pin > PD7) {
-                return DIO_ERR_LOOKUP;
+                return DIO_ERR_PIN;
         }
 
         attributes attr = {0};
