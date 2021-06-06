@@ -10,10 +10,11 @@
 
 /* error codes */
 #define DIO_SUCCESS     (uint8_t) 0 /**< @brief Function was successful.      */
-#define DIO_ERR_PIN     (uint8_t) 1 /**< @brief Input pin is invalid.        */
+#define DIO_ERR_PIN     (uint8_t) 1 /**< @brief Input pin is invalid.         */
 #define DIO_ERR_MODE    (uint8_t) 2 /**< @brief Input mode is invalid.        */
 #define DIO_ERR_VALUE   (uint8_t) 3 /**< @brief Input value is invalid.       */
 #define DIO_ERR_NULL    (uint8_t) 4 /**< @brief Input pointer is null.        */
+#define DIO_UNDEFINED   (uint8_t) 5 /**< @brief Internal bug. Please report!  */
 
 /* API mode and value arguments */
 #define INPUT   (uint8_t) 0
@@ -103,13 +104,13 @@
 *       @brief Selected from the Px, PINx, or ARDUINOx macros
 * @var dio_config::mode
 *       @brief INPUT or OUTPUT
-* @var dio_config::val
+* @var dio_config::value
 *       @brief LOW, HIGH, or PULLUP
 *******************************************************************************/
 typedef struct dio_config {
         uint8_t pin;
         uint8_t mode;
-        uint8_t val;
+        uint8_t value;
 } dio_config;
 
 /*******************************************************************************
@@ -118,15 +119,15 @@ typedef struct dio_config {
 * @param[in] table
 * @param[in] n total elements in table
 *******************************************************************************/
-uint8_t dio_open(dio_config *table, uint8_t n);
+uint8_t dio_open(const dio_config *const table, const uint8_t n);
 
 /*******************************************************************************
 * @function dio_write
 * @brief Drive an output pin or configure the pullup resistor on an input pin.
 * @param[in] pin
-* @param[in] val One of HIGH, LOW, or PULLUP
+* @param[in] value One of HIGH, LOW, TOGGLE, or PULLUP
 *******************************************************************************/
-uint8_t dio_write(uint8_t pin, uint8_t val);
+uint8_t dio_write(const uint8_t pin, const uint8_t value);
 
 /*******************************************************************************
 * @function dio_read
@@ -134,6 +135,6 @@ uint8_t dio_write(uint8_t pin, uint8_t val);
 * @param[in] name
 * @param[out] val Either HIGH or LOW on successful return
 *******************************************************************************/
-uint8_t dio_read(uint8_t pin, uint8_t *val);
+uint8_t dio_read(const uint8_t pin, uint8_t *const value);
 
 #endif /* DIO_H */

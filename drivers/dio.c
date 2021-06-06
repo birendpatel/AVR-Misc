@@ -9,6 +9,8 @@
 #include <avr/pgmspace.h>
 #include "dio.h"
 
+static uint8_t dio_open_entry(const uint8_t pin, const uint8_t mode);
+
 /*******************************************************************************
 * @struct name_attributes
 * @brief Contains relevant register details for a given pin name
@@ -65,3 +67,113 @@ static const attributes lookup[] PROGMEM = {
 };
 
 /******************************************************************************/
+
+uint8_t dio_open(const dio_config *const table, const uint8_t n)
+{
+        if (!table) {
+                return DIO_ERR_NULL;
+        }
+
+        if (!n) {
+                return DIO_ERR_VALUE;
+        }
+
+        uint8_t err = DIO_UNDEFINED;
+
+        for (uint8_t i = 0; i < n; i++) {
+                dio_config entry = table[i];
+
+                err = dio_open_entry(entry.pin, entry.mode);
+
+                if (err) {
+                        return err;
+                }
+
+                err = dio_write(entry.pin, entry.value);
+
+                if (err) {
+                        return err;
+                }
+        }
+
+        return DIO_SUCCESS;
+}
+
+/******************************************************************************/
+
+static uint8_t dio_open_entry(const uint8_t pin, const uint8_t mode)
+{
+        if (pin > PD7) {
+                return DIO_ERR_LOOKUP;
+        }
+
+        attributes attr = {0};
+        memcpy_P(&attr, &lookup[pin], sizeof(attributes));
+
+        volatile uint8_t *const ddr_reg = attr.pin_reg + 1;
+
+        switch (mode) {
+                case INPUT:
+                        *ddr_reg &= ~(attr.mask);
+                        break;
+
+                case OUTPUT:
+                        *ddr_reg |= attr.mask;
+                        break;
+
+                default:
+                        return DIO_ERR_MODE;
+        }
+
+        return DIO_SUCCESS;
+}
+
+/******************************************************************************/
+
+uint8_t dio_write(const uint8_t pin, const uint8_t value)
+{
+        if (pin > PD7) {
+                return DIO_ERR_LOOKUP;
+        }
+
+        attributes attr = {0};
+        memcpy_P(&attr, &lookup[pin], sizeof(attributes));
+
+        volatile uint8_t *const port_reg = attr.pin + 2;
+
+        switch (value) {
+                case TOGGLE:
+                        *port_reg ^= attr.mask;
+                        break;
+
+                case LOW:
+                        *port_reg &= ~(attr.mask);
+                        break;
+
+                case PULLUP: /* fallthrough */
+                case HIGH:
+                        *port_reg |= attr.mask;
+                        break;
+
+                default:
+                        return DIO_ERR_VALUE;
+        }
+
+        return DIO_SUCCESS;
+}
+
+/******************************************************************************/
+
+uint8_t dio_read(const uint8_t pin, uint8_t *const value)
+{
+        if (pin > PD7) {
+                return DIO_ERR_LOOKUP;
+        }
+
+        attributes attr = {0};
+        memcpy_P(&attr, &lookup[pin], sizeof(attributes));
+
+        *value = (uint8_t) ((attr.pin >> attr.pos) & 0x1);
+
+        return DIO_SUCCESS;
+}
