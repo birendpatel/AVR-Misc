@@ -9,8 +9,6 @@
 #include "dio.h"
 
 void setup(void) {
-        uint8_t err = 0;
-
         const dio_config table[8] = {
                 [0] = {ARDUINO_D04, OUTPUT, LOW},
                 [1] = {ARDUINO_D05, OUTPUT, HIGH},
@@ -20,7 +18,7 @@ void setup(void) {
                 [5] = {ARDUINO_D09, OUTPUT, HIGH},
                 [6] = {ARDUINO_D10, OUTPUT, LOW},
                 [7] = {ARDUINO_D11, OUTPUT, HIGH},
-        }
+        };
 
         (void) dio_open(table, 8);
 }

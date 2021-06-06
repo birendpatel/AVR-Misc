@@ -24,77 +24,77 @@
 #define TOGGLE  (uint8_t) 2
 
 /* digital I/O pins for the ATmega328P SPDIP pin configuration */
-#define PB0 (uint8_t) 0
-#define PB1 (uint8_t) 1
-#define PB2 (uint8_t) 2
-#define PB3 (uint8_t) 3
-#define PB4 (uint8_t) 4
-#define PB5 (uint8_t) 5
-#define PB6 (uint8_t) 6
-#define PB7 (uint8_t) 7
-#define PC0 (uint8_t) 8
-#define PC1 (uint8_t) 9
-#define PC2 (uint8_t) 10
-#define PC3 (uint8_t) 11
-#define PC4 (uint8_t) 12
-#define PC5 (uint8_t) 12
-#define PC6 (uint8_t) 13
-#define PD0 (uint8_t) 14
-#define PD1 (uint8_t) 15
-#define PD2 (uint8_t) 16
-#define PD3 (uint8_t) 17
-#define PD4 (uint8_t) 18
-#define PD5 (uint8_t) 19
-#define PD6 (uint8_t) 20
-#define PD7 (uint8_t) 21
+#define DIO_B0 (uint8_t) 0
+#define DIO_B1 (uint8_t) 1
+#define DIO_B2 (uint8_t) 2
+#define DIO_B3 (uint8_t) 3
+#define DIO_B4 (uint8_t) 4
+#define DIO_B5 (uint8_t) 5
+#define DIO_B6 (uint8_t) 6
+#define DIO_B7 (uint8_t) 7
+#define DIO_C0 (uint8_t) 8
+#define DIO_C1 (uint8_t) 9
+#define DIO_C2 (uint8_t) 10
+#define DIO_C3 (uint8_t) 11
+#define DIO_C4 (uint8_t) 12
+#define DIO_C5 (uint8_t) 13
+#define DIO_C6 (uint8_t) 14
+#define DIO_D0 (uint8_t) 15
+#define DIO_D1 (uint8_t) 16
+#define DIO_D2 (uint8_t) 17
+#define DIO_D3 (uint8_t) 18
+#define DIO_D4 (uint8_t) 19
+#define DIO_D5 (uint8_t) 20
+#define DIO_D6 (uint8_t) 21
+#define DIO_D7 (uint8_t) 22
 
 /* pin map for SPDIP physical layout */
-#define PIN01 PC6
-#define PIN02 PD0
-#define PIN03 PD1
-#define PIN04 PD2
-#define PIN05 PD3
-#define PIN06 PD4
-#define PIN09 PB6
-#define PIN10 PB7
-#define PIN11 PD5
-#define PIN12 PD6
-#define PIN13 PD7
-#define PIN14 PB0
-#define PIN15 PB1
-#define PIN16 PB2
-#define PIN17 PB3
-#define PIN18 PB4
-#define PIN19 PB5
-#define PIN23 PC0
-#define PIN24 PC1
-#define PIN25 PC2
-#define PIN26 PC3
-#define PIN27 PC4
-#define PIN28 PC5
+#define PIN01 DIO_C6
+#define PIN02 DIO_D0
+#define PIN03 DIO_D1
+#define PIN04 DIO_D2
+#define PIN05 DIO_D3
+#define PIN06 DIO_D4
+#define PIN09 DIO_B6
+#define PIN10 DIO_B7
+#define PIN11 DIO_D5
+#define PIN12 DIO_D6
+#define PIN13 DIO_D7
+#define PIN14 DIO_B0
+#define PIN15 DIO_B1
+#define PIN16 DIO_B2
+#define PIN17 DIO_B3
+#define PIN18 DIO_B4
+#define PIN19 DIO_B5
+#define PIN23 DIO_C0
+#define PIN24 DIO_C1
+#define PIN25 DIO_C2
+#define PIN26 DIO_C3
+#define PIN27 DIO_C4
+#define PIN28 DIO_C5
 
 /* pin map for arduino uno rev3 */
-#define ARDUINO_D00 PD0
-#define ARDUINO_D01 PD1
-#define ARDUINO_D02 PD2
-#define ARDUINO_D03 PD3
-#define ARDUINO_D04 PD4
-#define ARDUINO_D05 PD5
-#define ARDUINO_D06 PD6
-#define ARDUINO_D07 PD7
-#define ARDUINO_D08 PB0
-#define ARDUINO_D09 PB1
-#define ARDUINO_D10 PB2
-#define ARDUINO_D11 PB3
-#define ARDUINO_D12 PB4
-#define ARDUINO_D13 PB5
-#define ARDUINO_A00 PC0
-#define ARDUINO_A01 PC1
-#define ARDUINO_A02 PC2
-#define ARDUINO_A03 PC3
-#define ARDUINO_A04 PC4
-#define ARDUINO_A05 PC5
-#define ARDUINO_RST PC6
+#define ARDUINO_D00 DIO_D0
+#define ARDUINO_D01 DIO_D1
+#define ARDUINO_D02 DIO_D2
+#define ARDUINO_D03 DIO_D3
+#define ARDUINO_D04 DIO_D4
+#define ARDUINO_D05 DIO_D5
+#define ARDUINO_D06 DIO_D6
+#define ARDUINO_D07 DIO_D7
+#define ARDUINO_D08 DIO_B0
+#define ARDUINO_D09 DIO_B1
+#define ARDUINO_D10 DIO_B2
+#define ARDUINO_D11 DIO_B3
+#define ARDUINO_D12 DIO_B4
+#define ARDUINO_D13 DIO_B5
+#define ARDUINO_A00 DIO_C0
+#define ARDUINO_A01 DIO_C1
+#define ARDUINO_A02 DIO_C2
+#define ARDUINO_A03 DIO_C3
+#define ARDUINO_A04 DIO_C4
+#define ARDUINO_A05 DIO_C5
+#define ARDUINO_RST DIO_C6
 
 /*******************************************************************************
 * @struct dio_config

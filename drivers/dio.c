@@ -37,33 +37,33 @@ typedef struct attributes {
 *******************************************************************************/
 static const attributes lookup[] PROGMEM = {
         /* Port B */
-        [PB0] = { &PINB, 1 << PINB0, PINB0 },
-        [PB1] = { &PINB, 1 << PINB1, PINB1 },
-        [PB2] = { &PINB, 1 << PINB2, PINB2 },
-        [PB3] = { &PINB, 1 << PINB3, PINB3 },
-        [PB4] = { &PINB, 1 << PINB4, PINB4 },
-        [PB5] = { &PINB, 1 << PINB5, PINB5 },
-        [PB6] = { &PINB, 1 << PINB6, PINB6 },
-        [PB7] = { &PINB, 1 << PINB7, PINB7 },
+        [DIO_B0] = { &PINB, 1 << PINB0, PINB0 },
+        [DIO_B1] = { &PINB, 1 << PINB1, PINB1 },
+        [DIO_B2] = { &PINB, 1 << PINB2, PINB2 },
+        [DIO_B3] = { &PINB, 1 << PINB3, PINB3 },
+        [DIO_B4] = { &PINB, 1 << PINB4, PINB4 },
+        [DIO_B5] = { &PINB, 1 << PINB5, PINB5 },
+        [DIO_B6] = { &PINB, 1 << PINB6, PINB6 },
+        [DIO_B7] = { &PINB, 1 << PINB7, PINB7 },
 
         /* Port C */
-        [PC0] = { &PINC, 1 << PINC0, PINC0 },
-        [PC1] = { &PINC, 1 << PINC1, PINC1 },
-        [PC2] = { &PINC, 1 << PINC2, PINC2 },
-        [PC3] = { &PINC, 1 << PINC3, PINC3 },
-        [PC4] = { &PINC, 1 << PINC4, PINC4 },
-        [PC5] = { &PINC, 1 << PINC5, PINC5 },
-        [PC6] = { &PINC, 1 << PINC6, PINC6 },
+        [DIO_C0] = { &PINC, 1 << PINC0, PINC0 },
+        [DIO_C1] = { &PINC, 1 << PINC1, PINC1 },
+        [DIO_C2] = { &PINC, 1 << PINC2, PINC2 },
+        [DIO_C3] = { &PINC, 1 << PINC3, PINC3 },
+        [DIO_C4] = { &PINC, 1 << PINC4, PINC4 },
+        [DIO_C5] = { &PINC, 1 << PINC5, PINC5 },
+        [DIO_C6] = { &PINC, 1 << PINC6, PINC6 },
 
         /* Port D */
-        [PD0] = { &PIND, 1 << PIND0, PIND0 },
-        [PD1] = { &PIND, 1 << PIND1, PIND1 },
-        [PD2] = { &PIND, 1 << PIND2, PIND2 },
-        [PD3] = { &PIND, 1 << PIND3, PIND3 },
-        [PD4] = { &PIND, 1 << PIND4, PIND4 },
-        [PD5] = { &PIND, 1 << PIND5, PIND5 },
-        [PD6] = { &PIND, 1 << PIND6, PIND6 },
-        [PD7] = { &PIND, 1 << PIND7, PIND7 },
+        [DIO_D0] = { &PIND, 1 << PIND0, PIND0 },
+        [DIO_D1] = { &PIND, 1 << PIND1, PIND1 },
+        [DIO_D2] = { &PIND, 1 << PIND2, PIND2 },
+        [DIO_D3] = { &PIND, 1 << PIND3, PIND3 },
+        [DIO_D4] = { &PIND, 1 << PIND4, PIND4 },
+        [DIO_D5] = { &PIND, 1 << PIND5, PIND5 },
+        [DIO_D6] = { &PIND, 1 << PIND6, PIND6 },
+        [DIO_D7] = { &PIND, 1 << PIND7, PIND7 },
 };
 
 /******************************************************************************/
@@ -102,7 +102,7 @@ uint8_t dio_open(const dio_config *const table, const uint8_t n)
 
 static uint8_t dio_open_entry(const uint8_t pin, const uint8_t mode)
 {
-        if (pin > PD7) {
+        if (pin > DIO_D7) {
                 return DIO_ERR_PIN;
         }
 
@@ -131,14 +131,14 @@ static uint8_t dio_open_entry(const uint8_t pin, const uint8_t mode)
 
 uint8_t dio_write(const uint8_t pin, const uint8_t value)
 {
-        if (pin > PD7) {
+        if (pin > DIO_D7) {
                 return DIO_ERR_PIN;
         }
 
         attributes attr = {0};
         memcpy_P(&attr, &lookup[pin], sizeof(attributes));
 
-        volatile uint8_t *const port_reg = attr.pin + 2;
+        volatile uint8_t *const port_reg = attr.pin_reg + 2;
 
         switch (value) {
                 case TOGGLE:
@@ -149,8 +149,7 @@ uint8_t dio_write(const uint8_t pin, const uint8_t value)
                         *port_reg &= ~(attr.mask);
                         break;
 
-                case PULLUP: /* fallthrough */
-                case HIGH:
+                case HIGH: /* PULLUP on INPUT */
                         *port_reg |= attr.mask;
                         break;
 
@@ -165,14 +164,14 @@ uint8_t dio_write(const uint8_t pin, const uint8_t value)
 
 uint8_t dio_read(const uint8_t pin, uint8_t *const value)
 {
-        if (pin > PD7) {
+        if (pin > DIO_D7) {
                 return DIO_ERR_PIN;
         }
 
         attributes attr = {0};
         memcpy_P(&attr, &lookup[pin], sizeof(attributes));
 
-        *value = (uint8_t) ((attr.pin >> attr.pos) & 0x1);
+        *value = (uint8_t) ((*attr.pin_reg >> attr.pos) & 0x1);
 
         return DIO_SUCCESS;
 }

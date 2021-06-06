@@ -3,12 +3,12 @@
 # MIT License
 # Build for unison.c
 
-.PHONY flash clean
+.PHONY: flash clean
 
 #------------------------------------------------------------------------------#
 # hardware
 #------------------------------------------------------------------------------#
-MEMOP = flash:w:echo.hex:i
+MEMOP = flash:w:unison.hex:i
 DEVICE = ATmega328P
 PORT = /dev/ttyACM0
 TYPE = arduino
@@ -22,18 +22,18 @@ CFLAGS += -DF_CPU=16000000UL
 
 IPATH = -I../drivers
 
-VPATH %.h ../drivers/
-VPATH %.c ../drivers/
+vpath %.h ../drivers/
+vpath %.c ../drivers/
 
 #------------------------------------------------------------------------------#
 # build
 #------------------------------------------------------------------------------#
-
 unison.hex: unison.bin
-	avr-objcopy -v -O -ihex $< $@
+	avr-objcopy -v -O ihex $< $@
 
+# note: important to place cflags here so that -mmcu flag is exposed to linker
 unison.bin: dio.o unison.o
-	$(CC) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 unison.o: unison.c
 	$(CC) $(CFLAGS) $(IPATH) -c $< -o $@
