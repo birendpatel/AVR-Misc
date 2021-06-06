@@ -9,33 +9,31 @@
 #include <avr/pgmspace.h>
 #include "dio.h"
 
-#define MAX_PIN_INDEX PD7
-
 /*******************************************************************************
 * @struct name_attributes
 * @brief Contains relevant register details for a given pin name
-* @var name_attributes::pin
+* @var name_attributes::pin_reg
 *       @brief pointer to the associated PIN register
 * @var name_attributes::mask
 *       @brief bitmask over the PIN register. e.g., 1 << PINC3
 * @var name_attributes::pos
 *       @brief bit position within the PIN register. e.g., PINC3
 *******************************************************************************/
-struct name_attributes {
-        volatile uint8_t *const pin;
+typedef struct attributes {
+        volatile uint8_t *const pin_reg;
         const uint8_t mask;
         const uint8_t pos;
-};
+} attributes;
 
 /*******************************************************************************
 * @var lookup
-* @brief Lookup table to access attributes associated with a given pin name
+* @brief Lookup table to access the attributes associated with a given pin
 * @details Due to_SFR_IO8() offsets on the ATmega328P, the data direction and
 * port registers can be accessed via pointer arithmetic on the associated pin
 * register. The flash table only needs a reference to the pin register because
 * DDR = PIN + 1 and PORT = PIN + 2. This will free 46 bytes of flash memory.
 *******************************************************************************/
-static const struct name_attributes lookup[] PROGMEM = {
+static const attributes lookup[] PROGMEM = {
         /* Port B */
         [PB0] = { &PINB, 1 << PINB0, PINB0 },
         [PB1] = { &PINB, 1 << PINB1, PINB1 },
@@ -67,122 +65,3 @@ static const struct name_attributes lookup[] PROGMEM = {
 };
 
 /******************************************************************************/
-
-static inline struct name_attributes get_attr(const uint8_t name)
-{
-        struct name_attributes n_attr;
-
-        memcpy_P(&n_attr, &lookup[name], sizeof(struct name_attributes));
-
-        return n_attr;
-}
-
-/******************************************************************************/
-
-uint8_t dio_open(const uint8_t name, const uint8_t mode)
-{
-        if (name > MAX_PIN_INDEX) {
-                return DIO_LOOKUP;
-        }
-
-        if (mode > OUTPUT) {
-                return DIO_MODE;
-        }
-
-        struct name_attributes n_attr = get_attr(name);
-
-        volatile uint8_t *ddr = n_attr.pin + 1;
-
-        switch (mode) {
-                case INPUT:
-                        *ddr &= ~(n_attr.mask);
-                        break;
-
-                case OUTPUT:
-                        *ddr |= n_attr.mask;
-                        break;
-        }
-
-        return DIO_SUCCESS;
-}
-
-/******************************************************************************/
-
-uint8_t dio_write(const uint8_t name, const uint8_t value)
-{
-        if (name > MAX_PIN_INDEX) {
-                return DIO_LOOKUP;
-        }
-
-        if (value > PULLUP) {
-                return DIO_VALUE;
-        }
-
-        struct name_attributes n_attr = get_attr(name);
-
-        volatile uint8_t *ddr = n_attr.pin + 1;
-        volatile uint8_t *port = n_attr.pin + 2;
-
-        switch (value) {
-                case LOW:
-                        if (*ddr & n_attr.mask) {
-                                *port &= ~(n_attr.mask);
-                                break;
-                        }
-
-                        return DIO_DRIVE;
-
-                case HIGH:
-                        if (*ddr & n_attr.mask) {
-                                *port |= n_attr.mask;
-                                break;
-                        }
-
-                        return DIO_DRIVE;
-
-                case PULLUP:
-                        if (*ddr & n_attr.mask == 0) {
-                                port |= n_attr.mask;
-                                break;
-                        }
-
-                        return DIO_PULLUP;
-        }
-
-        return DIO_SUCCESS;
-}
-
-/******************************************************************************/
-
-uint8_t dio_read(const uint8_t name, uint8_t *const value)
-{
-        if (name > MAX_PIN_INDEX) {
-                return DIO_LOOKUP;
-        }
-
-        if (value == NULL) {
-                return DIO_NULL;
-        }
-
-        struct name_attributes n_attr = get_attr(name);
-
-        *value = (*n_attr.pin >> n_attr.pos) & 0x1;
-
-        return DIO_SUCCESS;
-}
-
-/******************************************************************************/
-
-uint8_t dio_toggle(const uint8_t name)
-{
-        if (name > MAX_PIN_INDEX) {
-                return DIO_LOOKUP;
-        }
-
-        struct name_attributes n_attr = get_attr(name);
-
-        volatile uint8_t *port = n_attr.pin + 2;
-        *port ^= n_attr.mask;
-
-        return DIO_SUCCESS;
-}
