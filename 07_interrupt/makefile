@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------#
 # hardware
 #------------------------------------------------------------------------------#
-MEMOP = flash:w:unison.hex:i
+MEMOP = flash:w:main.hex:i
 DEVICE = ATmega328P
 PORT = /dev/ttyACM0
 TYPE = arduino
@@ -21,8 +21,7 @@ CC = avr-gcc
 MCU = -mmcu=atmega328p
 
 CFLAGS = -O2 -Wall -Werror -Wextra -Wpedantic
-CFLAGS += -DF_CPU=16000000UL
-CFLAGS += $(MCU)
+CFLAGS += -DF_CPU=16000000UL $(MCU)
 
 IPATH = -I../drivers
 

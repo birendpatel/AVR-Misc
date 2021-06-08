@@ -39,7 +39,7 @@ void setup_digital_io(void) {
         err = dio_open(table, TABLE_SIZE);
 
         if (err) {
-                pb5_write(0xF0);
+                pb5_write(0xFF);
         }
 }
 
@@ -83,11 +83,16 @@ int main(void) {
         setup();
 
         while (1) {
-                dio_write(POLL_LED, TOGGLE);
+                uint8_t err = dio_write(POLL_LED, TOGGLE);
+
+                if (err) {
+                        pb5_write(0x22);
+                }
+
                 _delay_ms(250);
 
                 if (err_state) {
-                        pb5_write(0xAA);
+                        pb5_write(0x11);
                 }
         }
 
