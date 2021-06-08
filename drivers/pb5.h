@@ -21,7 +21,7 @@ void pb5_open(void);
 * @details If this open function fails, the builtin led will rapidly flash.
 * @param[in] pattern Each dibit from MSB -> LSB specifies the number of blinks
 * to occur in one second. The entire pattern is performed over 4 seconds. e.g.,
-* 0xB3 performs 2 blinks in second 1, 4 blinks in second 2, 0 blinks in second
+* 0xB3 performs 2 blinks in second 1, 3 blinks in second 2, 0 blinks in second
 * 3, and 3 blinks in second 4. This pattern repeatedly infinitely.
 *******************************************************************************/
 void pb5_write(const uint16_t pattern);
