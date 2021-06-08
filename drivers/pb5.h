@@ -24,6 +24,6 @@ void pb5_open(void);
 * 0xB3 performs 2 blinks in second 1, 3 blinks in second 2, 0 blinks in second
 * 3, and 3 blinks in second 4. This pattern repeatedly infinitely.
 *******************************************************************************/
-void pb5_write(const uint16_t pattern);
+void pb5_write(const uint8_t pattern);
 
 #endif /* PB5_H */

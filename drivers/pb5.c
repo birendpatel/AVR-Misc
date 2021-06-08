@@ -18,18 +18,18 @@ void pb5_open(void)
         uint8_t err = 0;
 
         dio_config table = {
-                .pin = ARUDINO_D13,
+                .pin = ARDUINO_D13,
                 .mode = OUTPUT,
                 .value = LOW
         };
 
-        err = dio_open(table, 1);
+        err = dio_open(&table, 1);
 
         if (err) {
                 DDRB |= (1 << DDB5);
 
                 while (1) {
-                        PORB ^= (1 << PORTB5);
+                        PORTB ^= (1 << PORTB5);
                         _delay_ms(50);
                 }
         }
@@ -58,7 +58,7 @@ loop:
                                 _delay_ms(1000);
                                 break;
                         case 1:
-                                dio_write(ARUDINO_D13, HIGH);
+                                dio_write(ARDUINO_D13, HIGH);
                                 _delay_ms(100);
                                 dio_write(ARDUINO_D13, LOW);
                                 _delay_ms(900);
@@ -66,25 +66,25 @@ loop:
                         case 2:
                                 dio_write(ARDUINO_D13, HIGH);
                                 _delay_ms(100);
-                                dio_write(ARUDINO_D13, LOW);
+                                dio_write(ARDUINO_D13, LOW);
                                 _delay_ms(100);
                                 dio_write(ARDUINO_D13, HIGH);
                                 _delay_ms(100);
-                                dio_write(ARUDINO_D13, LOW);
+                                dio_write(ARDUINO_D13, LOW);
                                 _delay_ms(700);
                                 break;
                         case 3:
                                 dio_write(ARDUINO_D13, HIGH);
                                 _delay_ms(100);
-                                dio_write(ARUDINO_D13, LOW);
+                                dio_write(ARDUINO_D13, LOW);
                                 _delay_ms(100);
                                 dio_write(ARDUINO_D13, HIGH);
                                 _delay_ms(100);
-                                dio_write(ARUDINO_D13, LOW);
+                                dio_write(ARDUINO_D13, LOW);
                                 _delay_ms(100);
                                 dio_write(ARDUINO_D13, HIGH);
                                 _delay_ms(100);
-                                dio_write(ARUDINO_D13, LOW);
+                                dio_write(ARDUINO_D13, LOW);
                                 _delay_ms(500);
                                 break;
                 }

@@ -14,9 +14,9 @@
 #include "dio.h"
 #include "pb5.h"
 
-#define INT_LED         DIO_D1
-#define BUTTON          DIO_D2
-#define POLL_LED        DIO_D3
+#define INT_LED         ARDUINO_D01
+#define BUTTON          ARDUINO_D02
+#define POLL_LED        ARDUINO_D03
 
 /******************************************************************************/
 
@@ -25,31 +25,32 @@ void setup_debugger(void) {
 }
 
 /******************************************************************************/
+#define TABLE_SIZE 3
 
 void setup_digital_io(void) {
         uint8_t err = 0;
 
-        const dio_config table[] = {
+        const dio_config table[TABLE_SIZE] = {
                 [0] = {INT_LED, OUTPUT, LOW},
                 [1] = {BUTTON, INPUT, PULLUP},
                 [2] = {POLL_LED, OUTPUT, LOW}
         };
 
-        err = dio_open(table, 2);
+        err = dio_open(table, TABLE_SIZE);
 
         if (err) {
-                pb5_write();
+                pb5_write(0xF0);
         }
 }
 
 /*******************************************************************************
-enable INT0 interrupt on rising edge
+enable INT0 interrupt on falling edge
 */
 void setup_interrupt(void) {
         cli();
 
         EIMSK |= 1 << INT0;
-        EICRA |= (1 << ISC01) | (1 << ISC00);
+        EICRA |= (1 << ISC01);
 
         sei();
 }
@@ -86,7 +87,7 @@ int main(void) {
                 _delay_ms(250);
 
                 if (err_state) {
-                        pb5_write();
+                        pb5_write(0xAA);
                 }
         }
 
