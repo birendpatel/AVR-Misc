@@ -8,10 +8,17 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#include <util/atomic.h>
 
 #include "dio.h"
 
 static uint8_t dio_open_entry(const uint8_t pin, const uint8_t mode);
+
+#ifdef atomic
+        #error "dio.c internal bug: atomic definition exists"
+#else
+        #define atomic ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+#endif
 
 /*******************************************************************************
 * @struct name_attributes
@@ -84,9 +91,6 @@ pullup resistor.
 
 uint8_t dio_open(const dio_config *const table, const uint8_t n)
 {
-        uint8_t err = 0;
-        uint8_t gei = 0;
-
         if (!table) {
                 return DIO_ERR_NULL;
         }
@@ -95,34 +99,27 @@ uint8_t dio_open(const dio_config *const table, const uint8_t n)
                 return DIO_ERR_VALUE;
         }
 
+        uint8_t open_err = 0;
+        uint8_t write_err = 0;
+
         for (uint8_t i = 0; i < n; i++) {
                 dio_config entry = table[i];
 
-                /* an ISR may execute between these instructions */
-
-                gei = SREG >> 7;
-                cli();
-
-                err = dio_open_entry(entry.pin, entry.mode);
-
-                if (err) {
-                        goto fail;
+                atomic {
+                        open_err = dio_open_entry(entry.pin, entry.mode);
+                        write_err = dio_write(entry.pin, entry.value);
                 }
 
-                err = dio_write(entry.pin, entry.value);
-
-                if (err) {
-                        goto fail;
+                if (open_err) {
+                        return open_err;
                 }
 
-                SREG |= (gei << 7);
+                if (write_err) {
+                        return write_err;
+                }
         }
 
         return DIO_SUCCESS;
-
-fail:
-        SREG |= (gei << 7);
-        return err;
 }
 
 /******************************************************************************/
